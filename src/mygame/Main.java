@@ -33,6 +33,9 @@ public class Main extends SimpleApplication {
     private Callable<Void> socket_waiter;
     private ServerSocket serverSocket;
     private Socket clientSocket;
+    
+    // used for assigning the id of clients
+    int clientCount = -1;
 
     public static void main(String[] args) {
         app = new Main();
@@ -76,7 +79,7 @@ public class Main extends SimpleApplication {
                             @Override
                             public Void call() throws Exception {
                                 System.out.println("Client connected.");
-//                                Client client = createClient(input, output);
+                                Client client = createClient(input, output);
 //                                client.initializeCamera();
 //                                AbstractVideoSender sender1 = attachRenderer(client, null, false, client.cam);
 //                                AbstractVideoSender sender2 = attachRenderer(client, output, true, client.cam);
@@ -94,5 +97,11 @@ public class Main extends SimpleApplication {
             }
         };
         executor.submit(socket_waiter);
+    }
+    
+    public Client createClient(InputStream input, OutputStream output) {
+        Client client = new Client(app, input, output, ++clientCount);
+        stateManager.attach(client);
+        return client;
     }
 }
