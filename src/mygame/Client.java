@@ -41,6 +41,7 @@ public class Client extends AbstractAppState {
     JPGVideoSender sender;
     
     // Targets
+    Map<String, Matrix4f> transformations;
     Map<String, Matrix4f> transformations_relative;
     
     // Reference object
@@ -59,6 +60,7 @@ public class Client extends AbstractAppState {
         this.id = id;
         
         // Initialize transformations_relative
+        transformations = new HashMap<>();
         transformations_relative = new HashMap<>();
         
         System.out.println("create client: " + this.id);
@@ -76,6 +78,8 @@ public class Client extends AbstractAppState {
 
         if (this.role.equals(Constants.NAME_TRAINEE)) {
             updateRenderMap();
+            
+            System.out.println(render_maps);
         }
     }
     
@@ -96,10 +100,16 @@ public class Client extends AbstractAppState {
                         System.out.println("Client #" + this.id + ": " + "set role as " + this.role);
                     }
                     break;
-                case Commands.TARGET_POSE:
+                case Commands.SET_TRANSFORMATION:
                     String name = readString();
                     float[] nums = readFloatArray(16);
                     Matrix4f mat = new Matrix4f(nums);
+                    transformations.put(name, mat);
+                    break;
+                case Commands.SET_TRANSFORMATION_RELATIVE:
+                    name = readString();
+                    nums = readFloatArray(16);
+                    mat = new Matrix4f(nums);
                     transformations_relative.put(name, mat);
                     break;
             }

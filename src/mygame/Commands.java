@@ -12,7 +12,8 @@ package mygame;
 public class Commands {
     
     protected static final int NO_COMMAND = -1;
-    protected static final int TARGET_POSE = 1;
-    protected static final int SET_ROLE = 2;
+    protected static final int SET_TRANSFORMATION = 1;
+    protected static final int SET_TRANSFORMATION_RELATIVE = 2;
+    protected static final int SET_ROLE = 3;
     
 }

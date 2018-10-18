@@ -30,6 +30,7 @@ import com.jme3.util.BufferUtils;
 import com.jme3.util.Screenshots;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -57,7 +58,7 @@ public abstract class AbstractVideoSender
     // view_port
     ViewPort view_port;
 
-    ArrayList<Spatial> models;
+    Map<String, Spatial> models;
 
     // bounding box
     int bounding_box_pos[];

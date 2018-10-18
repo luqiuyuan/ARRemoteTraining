@@ -19,6 +19,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -46,7 +48,7 @@ public class Main extends SimpleApplication {
     
     // Models
     ArrayList<String> model_names;
-    ArrayList<Spatial> models;
+    Map<String, Spatial> models;
 
     public static void main(String[] args) {
         app = new Main();
@@ -75,22 +77,23 @@ public class Main extends SimpleApplication {
     void initScene() {
         // Initialize model names
         model_names = new ArrayList<>();
-        model_names.add("hexagon");model_names.add("hexagon2");
+        model_names.add("PRIME_OBJECT");model_names.add("2");model_names.add("3");model_names.add("4");
         
         // Read models
-        models = new ArrayList<>();
+        models = new HashMap<>();
         for (int i = 0; i < model_names.size(); i++) {
-            Spatial model = assetManager.loadModel("Models/" + model_names.get(i) + ".j3o");
-            Geometry geo = (Geometry)model;
-            Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            mat.setTexture("ColorMap", assetManager.loadTexture("Models/" + model_names.get(i) + ".png"));
+            Box box = new Box(1, 1, 1);
+            Geometry geo = new Geometry(model_names.get(i), box);
+            Material mat = new Material(assetManager,
+              "Common/MatDefs/Misc/Unshaded.j3md");
+            mat.setColor("Color", ColorRGBA.Blue);
             geo.setMaterial(mat);
-            models.add(model);
+            models.put(model_names.get(i), geo);
         }
         
         // Attach models
-        for (int i = 0; i < models.size(); i++)
-            rootNode.attachChild(models.get(i));
+        for (int i = 0; i < model_names.size(); i++)
+            rootNode.attachChild(models.get(model_names.get(i)));
         
         // add directional light
         AmbientLight al = new AmbientLight();
