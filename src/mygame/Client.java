@@ -27,6 +27,10 @@ import java.util.HashMap;
  */
 public class Client extends AbstractAppState {
     
+    // Trainers & Trainees
+    public static ArrayList<Client> trainers = new ArrayList<>();
+    public static ArrayList<Client> trainees = new ArrayList<>();
+    
     int id;
     private String role;
     Main app;
@@ -45,9 +49,8 @@ public class Client extends AbstractAppState {
     // Camera
     Camera cam;
     
-    // Trainers & Trainees
-    public static ArrayList<Client> trainers = new ArrayList<>();
-    public static ArrayList<Client> trainees = new ArrayList<>();
+    // Render maps
+    ArrayList<ArrayList<String>> render_maps;
     
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
@@ -69,6 +72,10 @@ public class Client extends AbstractAppState {
     public void update(float tpf) {
         // interaction
         receiveInteraction();
+
+        if (this.role.equals(Constants.NAME_TRAINEE)) {
+            updateRenderMap();
+        }
     }
     
     private void receiveInteraction() {
@@ -91,6 +98,9 @@ public class Client extends AbstractAppState {
                 case Commands.TARGET_POSE:
                     String name = readString();
                     float[] nums = readFloatArray(16);
+                    for (int i = 0; i < 16; i++) {
+                        System.out.print(nums[i] + ", ");
+                    }
                     Matrix4f mat = new Matrix4f(nums);
                     if (name.equals(Constants.NAME_PRIME_OBJECT)) {
                         poses.put(Constants.NAME_PRIME_OBJECT, mat);
@@ -125,7 +135,7 @@ public class Client extends AbstractAppState {
         float[] arr = new float[length];
         
         for (int i = 0; i < length; i++) {
-            arr[0] = readFloat();
+            arr[i] = readFloat();
         }
         
         return arr;
@@ -196,7 +206,30 @@ public class Client extends AbstractAppState {
     void setRole(String role) { this.role = role; }
     
     void updateRenderMap() {
+        ArrayList<Client> opposites;
+        if (this.role.equals(Constants.NAME_TRAINER)) {
+            opposites = Client.trainees;
+        } else {
+            opposites = Client.trainers;
+        }
         
+        render_maps = new ArrayList<>();
+        for (int i = 0; i < opposites.size(); i++) {
+            ArrayList<String> render_map = new ArrayList<>();
+            render_maps.add(render_map);
+            Client opposite = opposites.get(i);
+            for (Map.Entry<String, Matrix4f> entry : opposite.poses.entrySet()) {
+                if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.poses.get(entry.getKey()) != null) {
+                    if (!Helper.areTwoTransformationSimilar(this.poses.get(entry.getKey()), entry.getValue())) {
+                        render_map.add(entry.getKey());
+                    }
+                }
+            }
+        }
+        
+        if (Config.DEUBG_MODE) {
+            System.out.println(render_maps);
+        }
     }
     
 }

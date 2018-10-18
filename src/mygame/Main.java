@@ -137,7 +137,6 @@ public class Main extends SimpleApplication {
     public Client createClient(InputStream input, OutputStream output) {
         Client client = new Client(app, input, output, ++clientCount);
         stateManager.attach(client);
-        System.out.println("end");
         return client;
     }
     

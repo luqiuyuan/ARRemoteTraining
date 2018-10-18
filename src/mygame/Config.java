@@ -13,4 +13,7 @@ public class Config {
     
     public static final boolean DEUBG_MODE = true;
     
+    public static final float TRANSLATION_THRESHOLD = 1.0f;
+    public static final float ROTATION_THRESHOLD = 5.0f;
+    
 }
