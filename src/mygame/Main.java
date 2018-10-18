@@ -1,11 +1,18 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.util.TangentBinormalGenerator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +32,7 @@ public class Main extends SimpleApplication {
     private static Main app;
     
     // Socket constants
-    private static final int MAX_NUM_THREADS = 1;
+    private static final int MAX_NUM_THREADS = 10;
     private static final int PORT_NUMBER = 23456;
     
     // Socket variables
@@ -34,8 +41,12 @@ public class Main extends SimpleApplication {
     private ServerSocket serverSocket;
     private Socket clientSocket;
     
-    // used for assigning the id of clients
+    // Used for assigning the id of clients
     int clientCount = -1;
+    
+    // Models
+    ArrayList<String> model_names;
+    ArrayList<Spatial> models;
 
     public static void main(String[] args) {
         app = new Main();
@@ -47,6 +58,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        initScene();
         initSocket();
     }
 
@@ -60,10 +72,36 @@ public class Main extends SimpleApplication {
         //TODO: add render code
     }
     
+    void initScene() {
+        // Initialize model names
+        model_names = new ArrayList<>();
+        model_names.add("hexagon");model_names.add("hexagon2");
+        
+        // Read models
+        models = new ArrayList<>();
+        for (int i = 0; i < model_names.size(); i++) {
+            Spatial model = assetManager.loadModel("Models/" + model_names.get(i) + ".j3o");
+            Geometry geo = (Geometry)model;
+            Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            mat.setTexture("ColorMap", assetManager.loadTexture("Models/" + model_names.get(i) + ".png"));
+            geo.setMaterial(mat);
+            models.add(model);
+        }
+        
+        // Attach models
+        for (int i = 0; i < models.size(); i++)
+            rootNode.attachChild(models.get(i));
+        
+        // add directional light
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.White.mult(1.3f));
+        rootNode.addLight(al);
+    }
+    
     public void initSocket() {
         // remove the default rendering view port
-        renderManager.removeMainView("Default");
-        
+//        renderManager.removeMainView("Default");
+
         executor = new ScheduledThreadPoolExecutor(MAX_NUM_THREADS);
         socket_waiter = new Callable<Void>() {
             @Override
@@ -80,11 +118,8 @@ public class Main extends SimpleApplication {
                             public Void call() throws Exception {
                                 System.out.println("Client connected.");
                                 Client client = createClient(input, output);
-//                                client.initializeCamera();
-//                                AbstractVideoSender sender1 = attachRenderer(client, null, false, client.cam);
-//                                AbstractVideoSender sender2 = attachRenderer(client, output, true, client.cam);
-//                                client.setVideoSender(sender1, sender2);
-//                                clients.add(client); // add to the client list
+                                client.initializeCamera();
+                                AbstractVideoSender sender = attachRenderer(client, null, client.cam);
                                 return null;
                             }
                         });
@@ -102,6 +137,27 @@ public class Main extends SimpleApplication {
     public Client createClient(InputStream input, OutputStream output) {
         Client client = new Client(app, input, output, ++clientCount);
         stateManager.attach(client);
+        System.out.println("end");
         return client;
+    }
+    
+    private AbstractVideoSender attachRenderer(Client client, OutputStream output, Camera camera) throws IOException{
+        AbstractVideoSender videoSender = new JPGVideoSender(app, client, output);
+        client.setJPGVideoSender((JPGVideoSender)videoSender);
+        ViewPort view_port;
+        view_port =
+        renderManager.createPostView("round 1", camera);
+        view_port.setClearFlags(true, true, true);
+        // get GUI node stuff
+        for (Spatial s : guiViewPort.getScenes()){
+            view_port.attachScene(s);
+        }
+        for (Spatial s : viewPort.getScenes()) {
+            view_port.attachScene(s);
+        }
+        stateManager.attach(videoSender);
+        view_port.addProcessor(videoSender);
+        videoSender.setViewPort(view_port);
+        return videoSender;
     }
 }

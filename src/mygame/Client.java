@@ -6,13 +6,20 @@
 package mygame;
 
 import com.jme3.app.state.AbstractAppState;
+import com.jme3.input.ChaseCamera;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.math.Transform;
+import com.jme3.math.Matrix4f;
+import com.jme3.renderer.Camera;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -21,15 +28,41 @@ import java.nio.ByteOrder;
 public class Client extends AbstractAppState {
     
     int id;
+    private String role;
     Main app;
     InputStream input;
     OutputStream output;
+    
+    // JPGVideoSender
+    JPGVideoSender sender;
+    
+    // Targets
+    Map<String, Matrix4f> poses;
+    
+    // Reference object
+    String referenceName = "hexagon";
+    
+    // Camera
+    Camera cam;
+    
+    // Trainers & Trainees
+    public static ArrayList<Client> trainers = new ArrayList<>();
+    public static ArrayList<Client> trainees = new ArrayList<>();
     
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
         this.output = output;
         this.id = id;
+        
+        // Initialize poses
+        poses = new HashMap<>();
+        System.out.println("create client: " + this.id);
+    }
+    
+    public void initializeCamera() {
+        // setup camera for client
+        cam = app.getCamera().clone();
     }
     
     @Override
@@ -39,14 +72,53 @@ public class Client extends AbstractAppState {
     }
     
     private void receiveInteraction() {
-        int command = readInt();
-        switch(command) {
-            case Commands.TARGET_POSE:
-                String name = readString();
-                float[] nums = readFloatArray(16);
-                System.out.println("Receive Target Pose: " + name + ", " + nums);
-                break;
+        int command = readCommand();
+        while (command != Commands.NO_COMMAND) {
+            switch(command) {
+                case Commands.SET_ROLE:
+                    String role_in = readString();
+                    this.setRole(role_in);
+                    // Add the client to trainers or trainees
+                    if (this.role.equals(Constants.NAME_TRAINER)) {
+                        Client.trainers.add(this);
+                    } else {
+                        Client.trainees.add(this);
+                    }
+                    if (Config.DEUBG_MODE) {
+                        System.out.println("Client #" + this.id + ": " + "set role as " + this.role);
+                    }
+                    break;
+                case Commands.TARGET_POSE:
+                    String name = readString();
+                    float[] nums = readFloatArray(16);
+                    Matrix4f mat = new Matrix4f(nums);
+                    if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+                        poses.put(Constants.NAME_PRIME_OBJECT, mat);
+                    }
+                    else if (poses.get(Constants.NAME_PRIME_OBJECT) != null) {
+                        mat = getRelativeTransformation(poses.get(Constants.NAME_PRIME_OBJECT), mat);
+                    }
+                    poses.put(name, mat);
+                    break;
+            }
+            
+            command = readCommand();
         }
+    }
+    
+    public int readCommand(){
+        int command = Commands.NO_COMMAND;
+        try {
+            if (input.available() >= 4) {
+                byte bytes[] = new byte[4];
+                input.read(bytes);
+                command = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getInt();
+            }
+        } catch (IOException e) {
+            System.err.println("Reading operation failed.");
+            System.exit(1);
+        }
+        return command;
     }
     
     float[] readFloatArray(int length) {
@@ -110,6 +182,21 @@ public class Client extends AbstractAppState {
             System.exit(1);
         }
         return delta;
+    }
+    
+    void setJPGVideoSender(JPGVideoSender sender) {
+        this.sender = sender;
+    }
+    
+    Matrix4f getRelativeTransformation(Matrix4f transformation_prime, Matrix4f transformation) {
+        return transformation.mult(transformation_prime.invert());
+    }
+    
+    String getRole() { return this.role; }
+    void setRole(String role) { this.role = role; }
+    
+    void updateRenderMap() {
+        
     }
     
 }
