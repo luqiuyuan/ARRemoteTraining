@@ -41,7 +41,7 @@ public class Client extends AbstractAppState {
     JPGVideoSender sender;
     
     // Targets
-    Map<String, Matrix4f> poses;
+    Map<String, Matrix4f> transformations_relative;
     
     // Reference object
     String referenceName = "hexagon";
@@ -58,8 +58,9 @@ public class Client extends AbstractAppState {
         this.output = output;
         this.id = id;
         
-        // Initialize poses
-        poses = new HashMap<>();
+        // Initialize transformations_relative
+        transformations_relative = new HashMap<>();
+        
         System.out.println("create client: " + this.id);
     }
     
@@ -99,13 +100,7 @@ public class Client extends AbstractAppState {
                     String name = readString();
                     float[] nums = readFloatArray(16);
                     Matrix4f mat = new Matrix4f(nums);
-                    if (name.equals(Constants.NAME_PRIME_OBJECT)) {
-                        poses.put(Constants.NAME_PRIME_OBJECT, mat);
-                    }
-                    else if (poses.get(Constants.NAME_PRIME_OBJECT) != null) {
-                        mat = getRelativeTransformation(poses.get(Constants.NAME_PRIME_OBJECT), mat);
-                    }
-                    poses.put(name, mat);
+                    transformations_relative.put(name, mat);
                     break;
             }
             
@@ -195,10 +190,6 @@ public class Client extends AbstractAppState {
         this.sender = sender;
     }
     
-    Matrix4f getRelativeTransformation(Matrix4f transformation_prime, Matrix4f transformation) {
-        return transformation.mult(transformation_prime.invert());
-    }
-    
     String getRole() { return this.role; }
     void setRole(String role) { this.role = role; }
     
@@ -215,9 +206,9 @@ public class Client extends AbstractAppState {
             ArrayList<String> render_map = new ArrayList<>();
             render_maps.add(render_map);
             Client opposite = opposites.get(i);
-            for (Map.Entry<String, Matrix4f> entry : opposite.poses.entrySet()) {
-                if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.poses.get(entry.getKey()) != null) {
-                    if (!Helper.areTwoTransformationSimilar(this.poses.get(entry.getKey()), entry.getValue())) {
+            for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
+                if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
+                    if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
                         render_map.add(entry.getKey());
                     }
                 }
