@@ -98,9 +98,6 @@ public class Client extends AbstractAppState {
                 case Commands.TARGET_POSE:
                     String name = readString();
                     float[] nums = readFloatArray(16);
-                    for (int i = 0; i < 16; i++) {
-                        System.out.print(nums[i] + ", ");
-                    }
                     Matrix4f mat = new Matrix4f(nums);
                     if (name.equals(Constants.NAME_PRIME_OBJECT)) {
                         poses.put(Constants.NAME_PRIME_OBJECT, mat);
@@ -225,10 +222,6 @@ public class Client extends AbstractAppState {
                     }
                 }
             }
-        }
-        
-        if (Config.DEUBG_MODE) {
-            System.out.println(render_maps);
         }
     }
     

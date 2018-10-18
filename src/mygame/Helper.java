@@ -32,11 +32,6 @@ public class Helper {
         Vector3f axis = new Vector3f();
         float diff_rotation_angle = diff_quaternion.toAngleAxis(axis);
         
-        if (Config.DEUBG_MODE) {
-//            System.out.println(transformation1.toString() + " : " + transformation2.toString());
-//            System.out.println(diff_translation_length + " : " + diff_rotation_angle);
-        }
-        
         if (diff_translation_length <= Config.TRANSLATION_THRESHOLD && diff_rotation_angle <= Config.ROTATION_THRESHOLD) {
             return true;
         } else {
