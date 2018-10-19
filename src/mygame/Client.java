@@ -117,9 +117,11 @@ public class Client extends AbstractAppState {
                 case Commands.RESOLUTION:
                     this.height = readInt();
                     this.width = readInt();
-                    System.out.println(this.height + " : " + this.width);
-                    aspect_ratio = (float)width / (float)height;
-                    cam.setFrustumPerspective(45f, aspect_ratio, 1, 10000);
+                    if (Config.DEUBG_MODE) {
+                        System.out.println("Client #" + this.id + ": set resolution as " + this.width + " (width)" + " : " + this.height + " (height)");
+                    }
+                    aspect_ratio = (float) width / (float) height;
+                    cam.setFrustumPerspective(45f, 2, aspect_ratio, 10000);
                     break;
             }
             
