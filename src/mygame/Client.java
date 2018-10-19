@@ -78,8 +78,6 @@ public class Client extends AbstractAppState {
 
         if (this.role.equals(Constants.NAME_TRAINEE)) {
             updateRenderMap();
-            
-            System.out.println(render_maps);
         }
     }
     

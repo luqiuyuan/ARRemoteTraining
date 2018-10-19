@@ -122,7 +122,7 @@ public class Main extends SimpleApplication {
                                 System.out.println("Client connected.");
                                 Client client = createClient(input, output);
                                 client.initializeCamera();
-                                AbstractVideoSender sender = attachRenderer(client, null, client.cam);
+                                AbstractVideoSender sender = attachRenderer(client, output, client.cam);
                                 return null;
                             }
                         });
@@ -147,8 +147,7 @@ public class Main extends SimpleApplication {
         AbstractVideoSender videoSender = new JPGVideoSender(app, client, output);
         client.setJPGVideoSender((JPGVideoSender)videoSender);
         ViewPort view_port;
-        view_port =
-        renderManager.createPostView("round 1", camera);
+        view_port = renderManager.createPostView("Remote Rendering", camera);
         view_port.setClearFlags(true, true, true);
         // get GUI node stuff
         for (Spatial s : guiViewPort.getScenes()){

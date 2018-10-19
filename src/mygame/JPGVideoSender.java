@@ -33,18 +33,21 @@ public class JPGVideoSender extends AbstractVideoSender{
 
     public void send(BufferedImage rawFrame) {
         try {
-            System.out.println("abc");
-            File file = new File("image" + num_frames_sent + ".jpg");
-            ImageIO.write(rawFrame, "jpg", file);
+            if (Config.SAVE_IMAGES_TO_DISK) {
+                File file = new File("image" + num_frames_sent + ".jpg");
+                ImageIO.write(rawFrame, "jpg", file);
+            }
+            
             num_frames_sent++;
-//            ByteArrayOutputStream imageByteOutputStream = new ByteArrayOutputStream();
-//            ImageIO.write(rawFrame, "png", imageByteOutputStream);
-//            byte[] commandBytes = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(Commands.IMAGE).array();
-//            byte[] imageBytes = imageByteOutputStream.toByteArray();
-//            byte[] lengthBytes = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(imageBytes.length).array();
-//            output.write(commandBytes);
-//            output.write(lengthBytes);
-//            output.write(imageBytes);
+            
+            ByteArrayOutputStream imageByteOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(rawFrame, "png", imageByteOutputStream);
+            byte[] commandBytes = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(Commands.IMAGE).array();
+            byte[] imageBytes = imageByteOutputStream.toByteArray();
+            byte[] lengthBytes = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(imageBytes.length).array();
+            output.write(commandBytes);
+            output.write(lengthBytes);
+            output.write(imageBytes);
         }
         catch (IOException e) {e.printStackTrace();}
     }
