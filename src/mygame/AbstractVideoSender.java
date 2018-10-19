@@ -109,7 +109,7 @@ public abstract class AbstractVideoSender
     }
 
     public void postFrame(FrameBuffer out) {
-        if (!this.paused && output != null) {
+        if (!this.paused && output != null && client.aspect_ratio > 0) {
             byteBuffer.clear();
             renderManager.getRenderer().readFrameBufferWithFormat(out, byteBuffer, Image.Format.BGRA8);
             Screenshots.convertScreenShot(byteBuffer, rawFrame);

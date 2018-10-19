@@ -53,6 +53,10 @@ public class Client extends AbstractAppState {
     // Render maps
     ArrayList<ArrayList<String>> render_maps;
     
+    // Dimensions
+    int width, height;
+    float aspect_ratio;
+    
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
@@ -109,6 +113,13 @@ public class Client extends AbstractAppState {
                     nums = readFloatArray(16);
                     mat = new Matrix4f(nums);
                     transformations_relative.put(name, mat);
+                    break;
+                case Commands.RESOLUTION:
+                    this.height = readInt();
+                    this.width = readInt();
+                    System.out.println(this.height + " : " + this.width);
+                    aspect_ratio = (float)width / (float)height;
+                    cam.setFrustumPerspective(45f, aspect_ratio, 1, 10000);
                     break;
             }
             
