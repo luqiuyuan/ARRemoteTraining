@@ -5,8 +5,10 @@
         <group>
             <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/Commands.java</file>
             <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/JPGVideoSender.java</file>
+            <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/Config.java</file>
+            <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/Constants.java</file>
+            <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/Helper.java</file>
             <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/AbstractVideoSender.java</file>
-            <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/VideoSender.java</file>
             <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/Main.java</file>
             <file>file:/Users/lu/Documents/projects/ARRemoteTraining/src/mygame/Client.java</file>
         </group>

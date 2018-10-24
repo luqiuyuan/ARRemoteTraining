@@ -77,7 +77,7 @@ public class Main extends SimpleApplication {
     void initScene() {
         // Initialize model names
         model_names = new ArrayList<>();
-        model_names.add("PRIME_OBJECT");model_names.add("2");model_names.add("3");model_names.add("4");
+        model_names.add("PRIME_OBJECT");
         
         // Read models
         models = new HashMap<>();

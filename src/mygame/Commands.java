@@ -17,5 +17,6 @@ public class Commands {
     protected static final int SET_ROLE = 3;
     protected static final int IMAGE = 4;
     protected static final int RESOLUTION = 5;
+    protected static final int SET_CAMERA_PROJECTION_MATRIX = 6;
     
 }

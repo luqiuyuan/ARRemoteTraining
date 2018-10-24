@@ -12,6 +12,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.math.Transform;
 import com.jme3.math.Matrix4f;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Spatial;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -107,6 +108,13 @@ public class Client extends AbstractAppState {
                     float[] nums = readFloatArray(16);
                     Matrix4f mat = new Matrix4f(nums);
                     transformations.put(name, mat);
+                    Spatial model = app.models.get(name);
+                    if (model != null) {
+                        Transform trans = new Transform();
+                        trans.fromTransformMatrix(mat);
+                        model.center();
+                        model.setLocalTransform(trans);
+                    }
                     break;
                 case Commands.SET_TRANSFORMATION_RELATIVE:
                     name = readString();
@@ -122,6 +130,12 @@ public class Client extends AbstractAppState {
                     }
                     aspect_ratio = (float) width / (float) height;
                     cam.setFrustumPerspective(45f, 2, aspect_ratio, 10000);
+                    break;
+                case Commands.SET_CAMERA_PROJECTION_MATRIX:
+                    nums = readFloatArray(16);
+                    mat = new Matrix4f(nums);
+                    System.out.println(mat);
+                    cam.setProjectionMatrix(mat);
                     break;
             }
             
