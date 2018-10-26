@@ -82,7 +82,7 @@ public class Main extends SimpleApplication {
         // Read models
         models = new HashMap<>();
         for (int i = 0; i < model_names.size(); i++) {
-            Box box = new Box(1, 1, 1);
+            Box box = new Box(new Vector3f(0.0f, 0.0f, 0.25f), 0.5f, 0.36f, 0.25f);
             Geometry geo = new Geometry(model_names.get(i), box);
             Material mat = new Material(assetManager,
               "Common/MatDefs/Light/Lighting.j3md");
@@ -107,7 +107,7 @@ public class Main extends SimpleApplication {
         rootNode.addLight(sun);
         
         cam.setLocation(Vector3f.ZERO);
-        cam.lookAtDirection(new Vector3f(0.0f, 0.0f, -1.0f), Vector3f.UNIT_X);
+        cam.lookAtDirection(new Vector3f(0.0f, 0.0f, -1.0f), Vector3f.UNIT_Y);
     }
     
     public void initSocket() {

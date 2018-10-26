@@ -147,13 +147,12 @@ public class Client extends AbstractAppState {
                         System.out.println("Client #" + this.id + ": set resolution as " + this.width + " (width)" + " : " + this.height + " (height)");
                     }
                     aspect_ratio = (float) width / (float) height;
-                    cam.setFrustumPerspective(45f, 2, aspect_ratio, 10000);
+                    cam.setFrustumPerspective(80.0f, 1, aspect_ratio, 10000);
                     break;
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
                     nums = readFloatArray(16);
                     mat = new Matrix4f(nums);
-                    System.out.println(mat);
-                    cam.setProjectionMatrix(mat);
+//                    cam.setProjectionMatrix(mat);
                     break;
             }
             
