@@ -13,6 +13,7 @@ import com.jme3.math.Transform;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.math.Vector4f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
 import java.io.IOException;
@@ -112,63 +113,31 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.SET_TRANSFORMATION:
                     String name = readString();
-                    float[] nums = readFloatArray(16);
-                    Matrix4f mat = new Matrix4f(nums);
-                    float[] nums_quaternion = readFloatArray(4);
-//                    if (this.num_of_frame < 300) {
-////                        Quaternion q = new Quaternion();
-////                        q.fromAngleAxis((float) (-45.0f / 180 * Math.PI) * (this.num_of_frame / 300.0f), Vector3f.UNIT_Y);
-//                        float angle = (float) (-45.0f / 180 * Math.PI) * (this.num_of_frame / 300.0f);
-//                        mat1 = new Matrix4f((float) Math.cos(angle), 0f, (float) Math.sin(angle), 0f, 0f, 1f, 0f, 0f, (float) -Math.sin(angle), 0f, (float) Math.cos(angle), 0f, 0f, 0f, 0f, 1f);
-////                        mat1.setRotationQuaternion(q);
-//                        mat = mat1;
-//                    }
-//                    if (this.num_of_frame >= 300 && this.num_of_frame < 600) {
-////                        Quaternion q = new Quaternion();
-////                        q.fromAngleAxis((float) (45.0f / 180 * Math.PI) * ((this.num_of_frame - 300) / 300.0f), Vector3f.UNIT_Z);
-//                        float angle = (float) (45.0f / 180 * Math.PI) * ((this.num_of_frame - 300) / 300.0f);
-//                        mat2 = new Matrix4f((float) Math.cos(angle), (float) -Math.sin(angle), 0f, 0f, (float) Math.sin(angle), (float) Math.cos(angle), 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f);
-////                        mat2.setRotationQuaternion(q);
-//                        mat = mat1.mult(mat2);
-//                    }
-//                    if (this.num_of_frame >= 600 && this.num_of_frame < 900) {
-////                        mat3 = Matrix4f.IDENTITY;
-////                        mat3.setTranslation(Vector3f.UNIT_Z.mult(-10.0f * (this.num_of_frame - 600) / 300.0f));
-//                        float angle = (float) (-45.0f / 180 * Math.PI) * ((this.num_of_frame - 600) / 300.0f);
-//                        mat3 = new Matrix4f(1f, 0f, 0f, 0f, 0f, (float) Math.cos(angle), (float) -Math.sin(angle), 0f, 0f, (float) Math.sin(angle), (float) Math.cos(angle), 0f, 0f, 0f, 0f, 1f);
-//                        mat = mat1.mult(mat2).mult(mat3);
-//                    }
-//                    if (this.num_of_frame >= 900 && this.num_of_frame < 1200) {
-//                        mat4 = Matrix4f.IDENTITY;
-//                        mat4.setTranslation(Vector3f.UNIT_Z.mult(-10.0f * (this.num_of_frame - 900) / 300.0f));
-//                        mat = mat1.mult(mat2).mult(mat3).mult(mat4);
-//                    }
-                    transformations.put(name, mat);
+                    float[] nums_vector = readFloatArray(3);
+                    float[] nums_vector_x = readFloatArray(3);
+                    float[] nums_translation = readFloatArray(3);
                     Spatial model = app.models.get(name);
                     if (model != null) {
-                        Transform trans = new Transform();
-                        trans.fromTransformMatrix(mat);
-//                        model.setLocalTransform(trans);
-                        Quaternion quaternion = new Quaternion(nums_quaternion[0], nums_quaternion[1], nums_quaternion[2], nums_quaternion[3]);
-                        model.setLocalRotation(quaternion);
-//                        Matrix3f mat_rot = new Matrix3f(mat.get(0, 0), mat.get(0, 1), mat.get(0, 2), mat.get(1, 0), mat.get(1, 1), mat.get(1, 2), mat.get(2, 0), mat.get(2, 1), mat.get(2, 2));
-//                        float w = (float) Math.sqrt((1+mat.get(0,0)+mat.get(1,1)+mat.get(2, 2))/2.0f);
-//                        float x = (mat.get(2, 1) - mat.get(1, 2)) / (4 * w);
-//                        float y = (mat.get(0, 2) - mat.get(2, 0)) / (4 * w);
-//                        float z = (mat.get(1, 0) - mat.get(0, 1)) / (4 * w);
-//                        Quaternion q = new Quaternion(x, y, z, w);
-//                        System.out.println(mat_rot);
-//                        Quaternion q = new Quaternion();
-//                        q.fromRotationMatrix(mat_rot);
-//                        System.out.println(q);
-//                        model.setLocalRotation(q);
+                        Vector3f vector = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
+                        Vector3f vector_x = new Vector3f(nums_vector_x[0], nums_vector_x[1], nums_vector_x[2]);
+                        Vector3f axis = new Vector3f(0.0f, 1.0f, 0.0f).cross(vector);
+                        Vector3f axis_x = new Vector3f(1.0f, 0.0f, 0.0f).cross(vector_x);
+                        double angle = Math.asin(axis.length() / vector.length());
+                        double angle_x = Math.asin(axis_x.length() / vector_x.length());
+                        Quaternion rotation = new Quaternion();
+                        Quaternion rotation_x = new Quaternion();
+                        rotation.fromAngleAxis((float) angle, axis.normalize());
+                        rotation_x.fromAngleAxis((float) -angle_x, axis_x.normalize());
+                        rotation = rotation_x.mult(rotation);
+                        model.setLocalTranslation(nums_translation[0], nums_translation[1], nums_translation[2]);
+                        model.setLocalRotation(rotation);
                     }
                     this.num_of_frame++;
                     break;
                 case Commands.SET_TRANSFORMATION_RELATIVE:
                     name = readString();
-                    nums = readFloatArray(16);
-                    mat = new Matrix4f(nums);
+                    float[] nums = readFloatArray(16);
+                    Matrix4f mat = new Matrix4f(nums);
                     transformations_relative.put(name, mat);
                     break;
                 case Commands.RESOLUTION:
@@ -178,7 +147,7 @@ public class Client extends AbstractAppState {
                         System.out.println("Client #" + this.id + ": set resolution as " + this.width + " (width)" + " : " + this.height + " (height)");
                     }
                     aspect_ratio = (float) width / (float) height;
-//                    cam.setFrustumPerspective(45f, 2, aspect_ratio, 10000);
+                    cam.setFrustumPerspective(45f, 2, aspect_ratio, 10000);
                     break;
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
                     nums = readFloatArray(16);
