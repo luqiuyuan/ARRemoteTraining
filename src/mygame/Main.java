@@ -106,7 +106,8 @@ public class Main extends SimpleApplication {
         sun.setDirection(new Vector3f(-.5f,.5f,-.5f).normalizeLocal());
         rootNode.addLight(sun);
         
-//        cam
+        cam.setLocation(Vector3f.ZERO);
+        cam.lookAtDirection(new Vector3f(0.0f, 0.0f, -1.0f), Vector3f.UNIT_X);
     }
     
     public void initSocket() {

@@ -153,7 +153,7 @@ public class Client extends AbstractAppState {
                     nums = readFloatArray(16);
                     mat = new Matrix4f(nums);
                     System.out.println(mat);
-//                    cam.setProjectionMatrix(mat);
+                    cam.setProjectionMatrix(mat);
                     break;
             }
             
