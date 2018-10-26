@@ -85,8 +85,8 @@ public class Main extends SimpleApplication {
             Box box = new Box(1, 1, 1);
             Geometry geo = new Geometry(model_names.get(i), box);
             Material mat = new Material(assetManager,
-              "Common/MatDefs/Misc/Unshaded.j3md");
-            mat.setColor("Color", ColorRGBA.Blue);
+              "Common/MatDefs/Light/Lighting.j3md");
+            mat.setColor("Diffuse",ColorRGBA.Orange);
             geo.setMaterial(mat);
             models.put(model_names.get(i), geo);
         }
@@ -95,10 +95,18 @@ public class Main extends SimpleApplication {
         for (int i = 0; i < model_names.size(); i++)
             rootNode.attachChild(models.get(model_names.get(i)));
         
-        // add directional light
+        // Add ambient light
         AmbientLight al = new AmbientLight();
-        al.setColor(ColorRGBA.White.mult(1.3f));
+        al.setColor(ColorRGBA.White.mult(0.3f));
         rootNode.addLight(al);
+        
+        // Add directional light
+        DirectionalLight sun = new DirectionalLight();
+        sun.setColor(ColorRGBA.White);
+        sun.setDirection(new Vector3f(-.5f,.5f,-.5f).normalizeLocal());
+        rootNode.addLight(sun);
+        
+//        cam
     }
     
     public void initSocket() {

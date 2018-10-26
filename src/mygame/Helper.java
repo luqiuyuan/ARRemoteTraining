@@ -39,4 +39,16 @@ public class Helper {
         }
     }
     
+    public static float[] toYawPitchRoll(Matrix4f matrix) {
+        float[] result = {0.0f, 0.0f, 0.0f};
+        if (matrix.get(0, 0) == 1.0f || matrix.get(0, 0) == -1.0f) {
+            result[0] = (float) Math.atan2(matrix.get(0, 2), matrix.get(2, 3));
+        } else {
+            result[0] = (float) Math.atan2(-matrix.get(2, 0), matrix.get(0,0));
+            result[1] = (float) Math.asin(matrix.get(1,0));
+            result[2] = (float) Math.atan2(-matrix.get(1,2), matrix.get(1,1));
+        }
+        return result;
+    }
+    
 }
