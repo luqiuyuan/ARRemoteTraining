@@ -88,6 +88,7 @@ public class Main extends SimpleApplication {
               "Common/MatDefs/Light/Lighting.j3md");
             mat.setColor("Diffuse",ColorRGBA.Orange);
             geo.setMaterial(mat);
+            geo.setCullHint(Spatial.CullHint.Never);
             models.put(model_names.get(i), geo);
         }
         

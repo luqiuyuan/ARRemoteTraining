@@ -18,5 +18,7 @@ public class Commands {
     protected static final int IMAGE = 4;
     protected static final int RESOLUTION = 5;
     protected static final int SET_CAMERA_PROJECTION_MATRIX = 6;
+    protected static final int TARGET_FOUND = 7;
+    protected static final int TARGET_LOST = 8;
     
 }

@@ -152,7 +152,24 @@ public class Client extends AbstractAppState {
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
                     nums = readFloatArray(16);
                     mat = new Matrix4f(nums);
-//                    cam.setProjectionMatrix(mat);
+                    mat.set(0, 0, -mat.get(1, 0));
+                    mat.set(1, 1, mat.get(0, 1));
+                    mat.set(1, 0, 0);
+                    mat.set(0, 1, 0);
+                    cam.setProjectionMatrix(mat);
+                    System.out.println(mat);
+                    break;
+                case Commands.TARGET_FOUND:
+                    name = readString();
+                    model = app.models.get(name);
+                    model.setCullHint(Spatial.CullHint.Never);
+//                    System.out.println(name + ": found");
+                    break;
+                case Commands.TARGET_LOST:
+                    name = readString();
+                    model = app.models.get(name);
+                    model.setCullHint(Spatial.CullHint.Always);
+//                    System.out.println(name + ": lost");
                     break;
             }
             
