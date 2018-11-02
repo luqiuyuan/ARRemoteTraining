@@ -154,12 +154,6 @@ public class Client extends AbstractAppState {
                     }
                     this.num_of_frame++;
                     break;
-                case Commands.SET_TRANSFORMATION_RELATIVE:
-                    name = readString();
-                    float[] nums = readFloatArray(16);
-                    Matrix4f mat = new Matrix4f(nums);
-                    transformations_relative.put(name, mat);
-                    break;
                 case Commands.RESOLUTION:
                     this.height = readInt();
                     this.width = readInt();
@@ -170,8 +164,8 @@ public class Client extends AbstractAppState {
                     cam.setFrustumPerspective(80.0f, 1, aspect_ratio, 10000);
                     break;
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
-                    nums = readFloatArray(16);
-                    mat = new Matrix4f(nums);
+                    float[] nums = readFloatArray(16);
+                    Matrix4f mat = new Matrix4f(nums);
                     mat.set(0, 0, -mat.get(1, 0));
                     mat.set(1, 1, mat.get(0, 1));
                     mat.set(1, 0, 0);
