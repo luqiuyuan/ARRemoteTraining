@@ -118,19 +118,27 @@ public class Client extends AbstractAppState {
                     float[] nums_translation = readFloatArray(3);
                     Spatial model = app.models.get(name);
                     if (model != null) {
-                        Vector3f vector = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
-                        Vector3f vector_x = new Vector3f(nums_vector_x[0], nums_vector_x[1], nums_vector_x[2]);
-                        Vector3f axis = new Vector3f(0.0f, 1.0f, 0.0f).cross(vector);
-                        Vector3f axis_x = new Vector3f(1.0f, 0.0f, 0.0f).cross(vector_x);
-                        double angle = Math.asin(axis.length() / vector.length());
-                        double angle_x = Math.asin(axis_x.length() / vector_x.length());
+                        Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
+                        Vector3f axis = new Vector3f(0.0f, 1.0f, 0.0f).cross(vector_y);
+                        double angle = Math.acos(new Vector3f(0.0f, 1.0f, 0.0f).dot(vector_y) / vector_y.length());
                         Quaternion rotation = new Quaternion();
-                        Quaternion rotation_x = new Quaternion();
                         rotation.fromAngleAxis((float) angle, axis.normalize());
-                        rotation_x.fromAngleAxis((float) -angle_x, axis_x.normalize());
-                        rotation = rotation_x.mult(rotation);
+                        
+                        Vector3f vector_x = new Vector3f(-nums_vector_x[0], -nums_vector_x[1], -nums_vector_x[2]);
+                        Vector3f x_rotated = rotation.mult(new Vector3f(1.0f, 0.0f, 0.0f));
+                        Vector3f axis_x = x_rotated.cross(vector_x);
+                        double angle_x = Math.acos(x_rotated.dot(vector_x) / (x_rotated.length() * vector_x.length()));
+                        Quaternion rotation_x = new Quaternion();
+                        if (axis_x.dot(vector_y) > 0) {
+                            rotation_x.fromAngleAxis((float) angle_x, new Vector3f(0.0f, 1.0f, 0.0f));
+                        } else {
+                            rotation_x.fromAngleAxis((float) angle_x, new Vector3f(0.0f, -1.0f, 0.0f));
+                        }
+                        
                         model.setLocalTranslation(nums_translation[0], nums_translation[1], nums_translation[2]);
-                        model.setLocalRotation(rotation);
+                        model.setLocalRotation(Quaternion.IDENTITY);
+                        model.rotate(rotation);
+                        model.rotate(rotation_x);
                     }
                     this.num_of_frame++;
                     break;
