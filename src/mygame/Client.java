@@ -119,20 +119,22 @@ public class Client extends AbstractAppState {
                     Spatial model = app.models.get(name);
                     if (model != null) {
                         Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
-                        Vector3f axis = new Vector3f(0.0f, 1.0f, 0.0f).cross(vector_y);
-                        double angle = Math.acos(new Vector3f(0.0f, 1.0f, 0.0f).dot(vector_y) / vector_y.length());
+                        Vector3f axis_y = new Vector3f(0.0f, 1.0f, 0.0f);
+                        Vector3f rotation_axis_y = axis_y.cross(vector_y);
+                        double angle = Math.acos(axis_y.dot(vector_y) / (axis_y.length() * vector_y.length()));
                         Quaternion rotation = new Quaternion();
-                        rotation.fromAngleAxis((float) angle, axis.normalize());
+                        rotation.fromAngleAxis((float) angle, rotation_axis_y.normalize());
                         
                         Vector3f vector_x = new Vector3f(-nums_vector_x[0], -nums_vector_x[1], -nums_vector_x[2]);
-                        Vector3f x_rotated = rotation.mult(new Vector3f(1.0f, 0.0f, 0.0f));
-                        Vector3f axis_x = x_rotated.cross(vector_x);
-                        double angle_x = Math.acos(x_rotated.dot(vector_x) / (x_rotated.length() * vector_x.length()));
+                        Vector3f axis_x = new Vector3f(1.0f, 0.0f, 0.0f);
+                        Vector3f axis_x_rotated = rotation.mult(axis_x);
+                        Vector3f rotation_axis_x = axis_x_rotated.cross(vector_x);
+                        double angle_x = Math.acos(axis_x_rotated.dot(vector_x) / (axis_x_rotated.length() * vector_x.length()));
                         Quaternion rotation_x = new Quaternion();
-                        if (axis_x.dot(vector_y) > 0) {
-                            rotation_x.fromAngleAxis((float) angle_x, new Vector3f(0.0f, 1.0f, 0.0f));
+                        if (rotation_axis_x.dot(vector_y) > 0) {
+                            rotation_x.fromAngleAxis((float) angle_x, axis_y);
                         } else {
-                            rotation_x.fromAngleAxis((float) angle_x, new Vector3f(0.0f, -1.0f, 0.0f));
+                            rotation_x.fromAngleAxis((float) angle_x, axis_y.mult(-1));
                         }
                         
                         model.setLocalTranslation(nums_translation[0], nums_translation[1], nums_translation[2]);
