@@ -177,13 +177,11 @@ public class Client extends AbstractAppState {
                     name = readString();
                     model = app.models.get(name);
                     model.setCullHint(Spatial.CullHint.Never);
-//                    System.out.println(name + ": found");
                     break;
                 case Commands.TARGET_LOST:
                     name = readString();
                     model = app.models.get(name);
                     model.setCullHint(Spatial.CullHint.Always);
-//                    System.out.println(name + ": lost");
                     break;
             }
             
