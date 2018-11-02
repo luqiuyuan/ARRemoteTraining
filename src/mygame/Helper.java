@@ -51,4 +51,8 @@ public class Helper {
         return result;
     }
     
+    public static Matrix4f getRelativeTransformation(Matrix4f base, Matrix4f matrix) {
+        return matrix.mult(base.invert());
+    }
+    
 }

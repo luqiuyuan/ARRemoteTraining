@@ -141,6 +141,16 @@ public class Client extends AbstractAppState {
                         model.setLocalRotation(Quaternion.IDENTITY);
                         model.rotate(rotation);
                         model.rotate(rotation_x);
+                        
+                        // Update the absolute transformation
+                        this.transformations.put(name, model.getLocalTransform().toTransformMatrix());
+                        
+                        // Update the relative transformation
+                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+                            this.updateRelativeTransformationsForAll();
+                        } else {
+                            this.updateRelativeTransformationsForName(name);
+                        }
                     }
                     this.num_of_frame++;
                     break;
@@ -292,6 +302,20 @@ public class Client extends AbstractAppState {
                     }
                 }
             }
+        }
+    }
+    
+    private void updateRelativeTransformationsForAll() {
+        for (Map.Entry<String, Matrix4f> entry : this.transformations.entrySet()) {
+            this.updateRelativeTransformationsForName(entry.getKey());
+        }
+    }
+
+    private void updateRelativeTransformationsForName(String name) {
+        Matrix4f base = this.transformations.get(Constants.NAME_PRIME_OBJECT);
+        if (base != null) {
+            Matrix4f relative = Helper.getRelativeTransformation(base, transformations.get(name));
+            this.transformations_relative.put(name, relative);
         }
     }
     
