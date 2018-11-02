@@ -69,6 +69,8 @@ public class Client extends AbstractAppState {
     int num_of_frame = 0;
     Matrix4f mat1, mat2, mat3, mat4;
     
+    Map<String, Spatial> models;
+    
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
@@ -94,8 +96,6 @@ public class Client extends AbstractAppState {
 
         if (this.role.equals(Constants.NAME_TRAINEE)) {
             updateRenderMap();
-            
-            render();
         }
     }
     
@@ -109,6 +109,9 @@ public class Client extends AbstractAppState {
                     // Add the client to trainers or trainees
                     if (this.role.equals(Constants.NAME_TRAINER)) {
                         Client.trainers.add(this);
+                        
+                        this.models = new HashMap<>();
+                        this.app.models_trainers.add(this.models);
                     } else {
                         Client.trainees.add(this);
                     }
@@ -313,16 +316,13 @@ public class Client extends AbstractAppState {
         if (base != null) {
             Matrix4f relative = Helper.getRelativeTransformation(base, transformations.get(name));
             this.transformations_relative.put(name, relative);
-        }
-    }
-    
-    private void render() {
-        for (int i = 0; i < this.render_maps.size(); i++) {
-            for (int j = 0; j < this.render_maps.get(i).size(); i++) {
-                String name = this.render_maps.get(i).get(j);
-                Geometry model = this.createModel(name);
-                Matrix4f transformation = Client.trainers.get(i).transformations.get(name);
-                this.app.getRootNode().attachChild(model);
+            
+            if (this.models.get(name) != null) {
+                Geometry geo = this.createModel(name);
+                geo.setCullHint(Spatial.CullHint.Always);
+                this.app.getRootNode().attachChild(geo);
+            } else {
+                
             }
         }
     }

@@ -49,6 +49,8 @@ public class Main extends SimpleApplication {
     // Models
     ArrayList<String> model_names;
     Map<String, Spatial> models;
+    ArrayList<Map<String, Spatial>> models_trainers;
+    ArrayList<Map<String, Spatial>> models_trainees;
 
     public static void main(String[] args) {
         app = new Main();
@@ -62,6 +64,9 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
         initScene();
         initSocket();
+        
+        models_trainers = new ArrayList<>();
+        models_trainees = new ArrayList<>();
     }
 
     @Override
