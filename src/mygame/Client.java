@@ -7,6 +7,8 @@ package mygame;
 
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.input.ChaseCamera;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Transform;
@@ -26,6 +28,7 @@ import java.util.Map;
 import java.util.HashMap;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.shape.Box;
 
 /**
  *
@@ -47,8 +50,8 @@ public class Client extends AbstractAppState {
     JPGVideoSender sender;
     
     // Targets
-    Map<String, Matrix4f> transformations;
-    Map<String, Matrix4f> transformations_relative;
+    private Map<String, Matrix4f> transformations;
+    private Map<String, Matrix4f> transformations_relative;
     
     // Reference object
     String referenceName = "hexagon";
@@ -91,6 +94,8 @@ public class Client extends AbstractAppState {
 
         if (this.role.equals(Constants.NAME_TRAINEE)) {
             updateRenderMap();
+            
+            render();
         }
     }
     
@@ -175,13 +180,13 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.TARGET_FOUND:
                     name = readString();
-                    model = app.models.get(name);
-                    model.setCullHint(Spatial.CullHint.Never);
+//                    model = app.models.get(name);
+//                    model.setCullHint(Spatial.CullHint.Never);
                     break;
                 case Commands.TARGET_LOST:
                     name = readString();
-                    model = app.models.get(name);
-                    model.setCullHint(Spatial.CullHint.Always);
+//                    model = app.models.get(name);
+//                    model.setCullHint(Spatial.CullHint.Always);
                     break;
             }
             
@@ -311,4 +316,26 @@ public class Client extends AbstractAppState {
         }
     }
     
+    private void render() {
+        for (int i = 0; i < this.render_maps.size(); i++) {
+            for (int j = 0; j < this.render_maps.get(i).size(); i++) {
+                String name = this.render_maps.get(i).get(j);
+                Geometry model = this.createModel(name);
+                Matrix4f transformation = Client.trainers.get(i).transformations.get(name);
+                this.app.getRootNode().attachChild(model);
+            }
+        }
+    }
+    
+    private Geometry createModel(String name) {
+        Box box = new Box(new Vector3f(0.0f, 0.0f, 0.25f), 0.5f, 0.36f, 0.25f);
+        Geometry geo = new Geometry(name, box);
+        Material mat = new Material(this.app.getAssetManager(),
+            "Common/MatDefs/Light/Lighting.j3md");
+        mat.setColor("Diffuse",ColorRGBA.Orange);
+        geo.setMaterial(mat);
+        geo.setCullHint(Spatial.CullHint.Never);
+        
+        return geo;
+    }
 }
