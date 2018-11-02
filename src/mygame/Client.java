@@ -114,6 +114,9 @@ public class Client extends AbstractAppState {
                         this.app.models_trainers.add(this.models);
                     } else {
                         Client.trainees.add(this);
+                        
+                        this.models = new HashMap<>();
+                        this.app.models_trainees.add(this.models);
                     }
                     if (Config.DEUBG_MODE) {
                         System.out.println("Client #" + this.id + ": " + "set role as " + this.role);

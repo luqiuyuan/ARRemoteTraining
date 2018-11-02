@@ -103,6 +103,17 @@ public abstract class AbstractVideoSender
         if (null == this.fps) {
             this.setFps(1.0 / tpf);
         }
+        
+        for (int i = 0; i < this.client.render_maps.size(); i++) {
+            for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
+                String name = this.client.render_maps.get(i).get(j);
+                if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
+                    this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Never);
+                } else {
+                    this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Never);
+                }
+            }
+        }
     }
 
     public void postQueue(RenderQueue rq) {
@@ -114,6 +125,17 @@ public abstract class AbstractVideoSender
             renderManager.getRenderer().readFrameBufferWithFormat(out, byteBuffer, Image.Format.BGRA8);
             Screenshots.convertScreenShot(byteBuffer, rawFrame);
             send(rawFrame);
+        }
+        
+        for (int i = 0; i < this.client.render_maps.size(); i++) {
+            for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
+                String name = this.client.render_maps.get(i).get(j);
+                if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
+                    this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Always);
+                } else {
+                    this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Always);
+                }
+            }
         }
     }
 
