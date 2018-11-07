@@ -14,6 +14,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Matrix4f;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.SceneProcessor;
@@ -103,14 +105,16 @@ public abstract class AbstractVideoSender
         if (null == this.fps) {
             this.setFps(1.0 / tpf);
         }
-        
-        for (int i = 0; i < this.client.render_maps.size(); i++) {
-            for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
-                String name = this.client.render_maps.get(i).get(j);
-                if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
-                    this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Never);
-                } else {
-                    this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Never);
+
+        if (this.client.render_maps != null) {
+            for (int i = 0; i < this.client.render_maps.size(); i++) {
+                for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
+                    String name = this.client.render_maps.get(i).get(j);
+                    if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
+                        this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Never);
+                    } else {
+                        this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Never);
+                    }
                 }
             }
         }
@@ -127,13 +131,15 @@ public abstract class AbstractVideoSender
             send(rawFrame);
         }
         
-        for (int i = 0; i < this.client.render_maps.size(); i++) {
-            for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
-                String name = this.client.render_maps.get(i).get(j);
-                if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
-                    this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Always);
-                } else {
-                    this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Always);
+        if (this.client.render_maps != null) {
+            for (int i = 0; i < this.client.render_maps.size(); i++) {
+                for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
+                    String name = this.client.render_maps.get(i).get(j);
+                    if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
+                        this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Always);
+                    } else {
+                        this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Always);
+                    }
                 }
             }
         }

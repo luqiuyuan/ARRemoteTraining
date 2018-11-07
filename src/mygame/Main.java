@@ -82,24 +82,23 @@ public class Main extends SimpleApplication {
     void initScene() {
         // Initialize model names
         model_names = new ArrayList<>();
-//        model_names.add("PRIME_OBJECT");model_names.add("2");model_names.add("3");model_names.add("4");
+        model_names.add("PRIME_OBJECT");model_names.add("2");model_names.add("3");model_names.add("4");
         
         // Read models
         models = new HashMap<>();
-//        for (int i = 0; i < model_names.size(); i++) {
-//            Box box = new Box(new Vector3f(0.0f, 0.0f, 0.25f), 0.5f, 0.36f, 0.25f);
-//            Geometry geo = new Geometry(model_names.get(i), box);
-//            Material mat = new Material(assetManager,
-//              "Common/MatDefs/Light/Lighting.j3md");
-//            mat.setColor("Diffuse",ColorRGBA.Orange);
-//            geo.setMaterial(mat);
-//            geo.setCullHint(Spatial.CullHint.Never);
-//            models.put(model_names.get(i), geo);
-//        }
+        for (int i = 0; i < model_names.size(); i++) {
+            Box box = new Box(new Vector3f(0.0f, 0.0f, 0.25f), 0.5f, 0.36f, 0.25f);
+            Geometry geo = new Geometry(model_names.get(i), box);
+            Material mat = new Material(assetManager,
+              "Common/MatDefs/Light/Lighting.j3md");
+            mat.setColor("Diffuse",ColorRGBA.Orange);
+            geo.setMaterial(mat);
+            models.put(model_names.get(i), geo);
+        }
         
         // Attach models
-        for (int i = 0; i < model_names.size(); i++)
-            rootNode.attachChild(models.get(model_names.get(i)));
+//        for (int i = 0; i < model_names.size(); i++)
+//            rootNode.attachChild(models.get(model_names.get(i)));
         
         // Add ambient light
         AmbientLight al = new AmbientLight();
@@ -175,5 +174,15 @@ public class Main extends SimpleApplication {
         view_port.addProcessor(videoSender);
         videoSender.setViewPort(view_port);
         return videoSender;
+    }
+    
+    public Map<String, Spatial> cloneModels() {
+        Map<String, Spatial> models_clone = new HashMap<>();
+        
+        for (Map.Entry<String, Spatial> entry : this.models.entrySet()) {
+            models_clone.put(entry.getKey(), entry.getValue().clone());
+        }
+        
+        return models_clone;
     }
 }

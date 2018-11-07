@@ -81,6 +81,10 @@ public class Client extends AbstractAppState {
         transformations = new HashMap<>();
         transformations_relative = new HashMap<>();
         
+        // Initialize models
+        this.models = this.app.cloneModels();
+        this.attachModels();
+        
         System.out.println("create client: " + this.id);
     }
     
@@ -94,8 +98,10 @@ public class Client extends AbstractAppState {
         // interaction
         receiveInteraction();
 
-        if (this.role.equals(Constants.NAME_TRAINEE)) {
-            updateRenderMap();
+        if (this.role != null) {
+            if (this.role.equals(Constants.NAME_TRAINEE)) {
+                updateRenderMap();
+            }
         }
     }
     
@@ -109,13 +115,9 @@ public class Client extends AbstractAppState {
                     // Add the client to trainers or trainees
                     if (this.role.equals(Constants.NAME_TRAINER)) {
                         Client.trainers.add(this);
-                        
-                        this.models = new HashMap<>();
                         this.app.models_trainers.add(this.models);
                     } else {
                         Client.trainees.add(this);
-                        
-                        this.models = new HashMap<>();
                         this.app.models_trainees.add(this.models);
                     }
                     if (Config.DEUBG_MODE) {
@@ -319,14 +321,6 @@ public class Client extends AbstractAppState {
         if (base != null) {
             Matrix4f relative = Helper.getRelativeTransformation(base, transformations.get(name));
             this.transformations_relative.put(name, relative);
-            
-            if (this.models.get(name) != null) {
-                Geometry geo = this.createModel(name);
-                geo.setCullHint(Spatial.CullHint.Always);
-                this.app.getRootNode().attachChild(geo);
-            } else {
-                
-            }
         }
     }
     
@@ -340,5 +334,20 @@ public class Client extends AbstractAppState {
         geo.setCullHint(Spatial.CullHint.Never);
         
         return geo;
+    }
+    
+    public Matrix4f getTransformation(String name) {
+        return this.transformations.get(name);
+    }
+    
+    public Matrix4f getTransformationRelative(String name) {
+        return this.transformations_relative.get(name);
+    }
+    
+    private void attachModels() {
+        for (Map.Entry<String, Spatial> entry : this.models.entrySet()) {
+            entry.getValue().setCullHint(Spatial.CullHint.Always);
+            this.app.getRootNode().attachChild(entry.getValue());
+        }
     }
 }
