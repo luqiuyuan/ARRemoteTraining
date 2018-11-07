@@ -163,21 +163,26 @@ public class Client extends AbstractAppState {
                         }
                         
                         // Reset model transformation
-//                        if (this.transformations_relative.get(name) != null) {
-//                            Transform transform = new Transform();
-//                            transform.fromTransformMatrix(this.transformations_relative.get(name));
-//                            model.setLocalTransform(transform);
-//                        }
+                        if (this.transformations_relative.get(name) != null) {
+                            Transform transform = new Transform();
+                            transform.fromTransformMatrix(this.transformations_relative.get(name));
+                            model.setLocalTranslation(Vector3f.ZERO);
+                            model.setLocalRotation(Matrix3f.IDENTITY);
+                            model.setLocalTransform(transform);
+                        }
                         
                         // Update camera position
-//                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
-//                            Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
-//                            Matrix4f transformation_inverse = transformation.invert();
-//                            Transform transform_camera = new Transform();
-//                            transform_camera.fromTransformMatrix(transformation_inverse);
-//                            this.cam.setRotation(transform_camera.getRotation());
-//                            this.cam.setLocation(transform_camera.getTranslation());
-//                        }
+                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+                            Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
+                            Matrix4f transformation_inverse = transformation.invert();
+                            Transform transform_camera = new Transform();
+                            transform_camera.fromTransformMatrix(transformation_inverse);
+                            this.cam.setLocation(Vector3f.ZERO);
+                            this.cam.lookAt(Vector3f.UNIT_Z, Vector3f.UNIT_Y);
+                            this.cam.setLocation(transform_camera.getTranslation());
+                            this.cam.setRotation(transform_camera.getRotation());
+                            this.cam.lookAtDirection(this.cam.getDirection().mult(-1), this.cam.getUp());
+                        }
                     }
                     break;
                 case Commands.RESOLUTION:
@@ -335,18 +340,6 @@ public class Client extends AbstractAppState {
             Matrix4f relative = Helper.getRelativeTransformation(base, transformations.get(name));
             this.transformations_relative.put(name, relative);
         }
-    }
-    
-    private Geometry createModel(String name) {
-        Box box = new Box(new Vector3f(0.0f, 0.0f, 0.25f), 0.5f, 0.36f, 0.25f);
-        Geometry geo = new Geometry(name, box);
-        Material mat = new Material(this.app.getAssetManager(),
-            "Common/MatDefs/Light/Lighting.j3md");
-        mat.setColor("Diffuse",ColorRGBA.Orange);
-        geo.setMaterial(mat);
-        geo.setCullHint(Spatial.CullHint.Never);
-        
-        return geo;
     }
     
     public Matrix4f getTransformation(String name) {

@@ -113,6 +113,8 @@ public abstract class AbstractVideoSender
                     if (this.client.getRole().equals(Constants.NAME_TRAINER)) {
                         this.app.models_trainees.get(i).get(name).setCullHint(Spatial.CullHint.Never);
                     } else {
+//                        System.out.println("Render: " + name);
+//                        System.out.println(this.app.models_trainers.get(i).get(name).getLocalTransform());
                         this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Never);
                     }
                 }
