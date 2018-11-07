@@ -164,6 +164,23 @@ public class Client extends AbstractAppState {
                         } else {
                             this.updateRelativeTransformationsForName(name);
                         }
+                        
+                        // Reset model transformation
+                        if (this.transformations_relative.get(name) != null) {
+                            Transform transform = new Transform();
+                            transform.fromTransformMatrix(this.transformations_relative.get(name));
+                            model.setLocalTransform(transform);
+                        }
+                        
+                        // Update camera position
+                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+                            Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
+                            Matrix4f transformation_inverse = transformation.invert();
+                            Transform transform_camera = new Transform();
+                            transform_camera.fromTransformMatrix(transformation_inverse);
+                            this.cam.setRotation(transform_camera.getRotation());
+                            this.cam.setLocation(transform_camera.getTranslation());
+                        }
                     }
                     this.num_of_frame++;
                     break;
