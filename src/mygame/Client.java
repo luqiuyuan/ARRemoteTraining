@@ -66,9 +66,6 @@ public class Client extends AbstractAppState {
     int width, height;
     float aspect_ratio;
     
-    int num_of_frame = 0;
-    Matrix4f mat1, mat2, mat3, mat4;
-    
     Map<String, Spatial> models;
     
     public Client(Main app, InputStream input, OutputStream output, int id) {
@@ -129,7 +126,7 @@ public class Client extends AbstractAppState {
                     float[] nums_vector = readFloatArray(3);
                     float[] nums_vector_x = readFloatArray(3);
                     float[] nums_translation = readFloatArray(3);
-                    Spatial model = app.models.get(name);
+                    Spatial model = this.models.get(name);
                     if (model != null) {
                         Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
                         Vector3f axis_y = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -166,23 +163,22 @@ public class Client extends AbstractAppState {
                         }
                         
                         // Reset model transformation
-                        if (this.transformations_relative.get(name) != null) {
-                            Transform transform = new Transform();
-                            transform.fromTransformMatrix(this.transformations_relative.get(name));
-                            model.setLocalTransform(transform);
-                        }
+//                        if (this.transformations_relative.get(name) != null) {
+//                            Transform transform = new Transform();
+//                            transform.fromTransformMatrix(this.transformations_relative.get(name));
+//                            model.setLocalTransform(transform);
+//                        }
                         
                         // Update camera position
-                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
-                            Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
-                            Matrix4f transformation_inverse = transformation.invert();
-                            Transform transform_camera = new Transform();
-                            transform_camera.fromTransformMatrix(transformation_inverse);
-                            this.cam.setRotation(transform_camera.getRotation());
-                            this.cam.setLocation(transform_camera.getTranslation());
-                        }
+//                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+//                            Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
+//                            Matrix4f transformation_inverse = transformation.invert();
+//                            Transform transform_camera = new Transform();
+//                            transform_camera.fromTransformMatrix(transformation_inverse);
+//                            this.cam.setRotation(transform_camera.getRotation());
+//                            this.cam.setLocation(transform_camera.getTranslation());
+//                        }
                     }
-                    this.num_of_frame++;
                     break;
                 case Commands.RESOLUTION:
                     this.height = readInt();

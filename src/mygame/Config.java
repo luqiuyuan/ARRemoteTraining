@@ -17,4 +17,6 @@ public class Config {
     public static final float TRANSLATION_THRESHOLD = 1.0f;
     public static final float ROTATION_THRESHOLD = 5.0f;
     
+    public static final boolean SHOW_OWN_MODELS = true;
+    
 }

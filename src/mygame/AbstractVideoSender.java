@@ -118,6 +118,12 @@ public abstract class AbstractVideoSender
                 }
             }
         }
+        
+        if (Config.SHOW_OWN_MODELS) {
+            for (Map.Entry<String, Spatial> entry : this.client.models.entrySet()) {
+                entry.getValue().setCullHint(Spatial.CullHint.Never);
+            }
+        }
     }
 
     public void postQueue(RenderQueue rq) {
@@ -141,6 +147,12 @@ public abstract class AbstractVideoSender
                         this.app.models_trainers.get(i).get(name).setCullHint(Spatial.CullHint.Always);
                     }
                 }
+            }
+        }
+        
+        if (Config.SHOW_OWN_MODELS) {
+            for (Map.Entry<String, Spatial> entry : this.client.models.entrySet()) {
+                entry.getValue().setCullHint(Spatial.CullHint.Always);
             }
         }
     }
