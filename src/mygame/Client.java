@@ -96,9 +96,7 @@ public class Client extends AbstractAppState {
         receiveInteraction();
 
         if (this.role != null) {
-            if (this.role.equals(Constants.NAME_TRAINEE)) {
-                updateRenderMap();
-            }
+            updateRenderMap();
         }
     }
     
