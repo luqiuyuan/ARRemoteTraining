@@ -148,7 +148,8 @@ public class Client extends AbstractAppState {
                         }
                         
                         model.setLocalTranslation(nums_translation[0], nums_translation[1], nums_translation[2]);
-                        model.setLocalRotation(Quaternion.IDENTITY);
+                        model.setLocalRotation(Matrix3f.IDENTITY);
+                        model.getLocalTransform().setScale(1.0f);
                         model.rotate(rotation);
                         model.rotate(rotation_x);
                         
