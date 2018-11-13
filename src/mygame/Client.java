@@ -52,6 +52,7 @@ public class Client extends AbstractAppState {
     // Targets
     private Map<String, Matrix4f> transformations;
     private Map<String, Matrix4f> transformations_relative;
+    private Map<String, Matrix4f> transformations_relative_start;
     
     // Reference object
     String referenceName = "hexagon";
@@ -77,6 +78,7 @@ public class Client extends AbstractAppState {
         // Initialize transformations_relative
         transformations = new HashMap<>();
         transformations_relative = new HashMap<>();
+        transformations_relative_start = new HashMap<>();
         
         // Initialize models
         this.models = this.app.cloneModels();
@@ -322,10 +324,11 @@ public class Client extends AbstractAppState {
             Client opposite = opposites.get(i);
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
+                    // Do NOT render a model if it is NOT away from its starting position
+                    if (Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue()))
+                        continue;
+                    
                     if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
-                        if (this.role.equals(Constants.NAME_TRAINER)) {
-                            System.out.println(entry.getKey() + entry.getValue());
-                        }
                         render_map.add(entry.getKey());
                     }
                 }
@@ -344,6 +347,11 @@ public class Client extends AbstractAppState {
         if (base != null) {
             Matrix4f relative = Helper.getRelativeTransformation(base, transformations.get(name));
             this.transformations_relative.put(name, relative);
+            
+            // If the start relative transformation has not been initialized, initialize it
+            if (this.transformations_relative_start.get(name) == null) {
+                this.transformations_relative_start.put(name, relative);
+            }
         }
     }
     
