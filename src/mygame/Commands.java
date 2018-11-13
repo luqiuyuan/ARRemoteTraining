@@ -19,5 +19,6 @@ public class Commands {
     protected static final int SET_CAMERA_PROJECTION_MATRIX = 5;
     protected static final int TARGET_FOUND = 6;
     protected static final int TARGET_LOST = 7;
+    protected static final int REQUEST_FRAME = 8;
     
 }

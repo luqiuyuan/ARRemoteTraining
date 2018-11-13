@@ -213,6 +213,9 @@ public class Client extends AbstractAppState {
 //                    model = app.models.get(name);
 //                    model.setCullHint(Spatial.CullHint.Always);
                     break;
+                case Commands.REQUEST_FRAME:
+                    this.sender.start();
+                    break;
             }
             
             command = readCommand();
@@ -320,6 +323,9 @@ public class Client extends AbstractAppState {
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
                     if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
+                        if (this.role.equals(Constants.NAME_TRAINER)) {
+                            System.out.println(entry.getKey() + entry.getValue());
+                        }
                         render_map.add(entry.getKey());
                     }
                 }

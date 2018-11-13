@@ -135,6 +135,9 @@ public abstract class AbstractVideoSender
             renderManager.getRenderer().readFrameBufferWithFormat(out, byteBuffer, Image.Format.BGRA8);
             Screenshots.convertScreenShot(byteBuffer, rawFrame);
             send(rawFrame);
+            
+            // Send one frame and pause
+            this.pause();
         }
         
         if (this.client.render_maps != null) {
