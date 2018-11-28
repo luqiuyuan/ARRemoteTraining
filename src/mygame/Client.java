@@ -84,7 +84,7 @@ public class Client extends AbstractAppState {
         this.models = this.app.cloneModels();
         this.attachModels();
         
-        System.out.println("create client: " + this.id);
+        System.out.println("Created client: " + this.id);
     }
     
     public void initializeCamera() {
