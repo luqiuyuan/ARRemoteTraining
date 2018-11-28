@@ -122,11 +122,12 @@ public class Client extends AbstractAppState {
                     }
                     break;
                 case Commands.SET_TRANSFORMATION:
-                    String name = readString();
+                    String name_target = readString();
+                    String name_object = ObjectConfig.getObjectNameFromTargetName(name_target);
                     float[] nums_vector = readFloatArray(3);
                     float[] nums_vector_x = readFloatArray(3);
                     float[] nums_translation = readFloatArray(3);
-                    Spatial model = this.models.get(name);
+                    Spatial model = this.models.get(name_object);
                     if (model != null) {
                         Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
                         Vector3f axis_y = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -153,27 +154,32 @@ public class Client extends AbstractAppState {
                         model.rotate(rotation);
                         model.rotate(rotation_x);
                         
+                        Matrix4f transformation_delta = ObjectConfig.getDeltaMatrix(name_object, name_target);
+                        Transform transform_delta = new Transform();
+                        transform_delta.fromTransformMatrix(transformation_delta);
+                        model.setLocalTransform(transform_delta);
+                        
                         // Update the absolute transformation
-                        this.transformations.put(name, model.getLocalTransform().toTransformMatrix());
+                        this.transformations.put(name_object, model.getLocalTransform().toTransformMatrix());
                         
                         // Update the relative transformation
-                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+                        if (name_object.equals(Constants.NAME_PRIME_OBJECT)) {
                             this.updateRelativeTransformationsForAll();
                         } else {
-                            this.updateRelativeTransformationsForName(name);
+                            this.updateRelativeTransformationsForName(name_object);
                         }
                         
                         // Reset model transformation
-                        if (this.transformations_relative.get(name) != null) {
+                        if (this.transformations_relative.get(name_object) != null) {
                             Transform transform = new Transform();
-                            transform.fromTransformMatrix(this.transformations_relative.get(name));
+                            transform.fromTransformMatrix(this.transformations_relative.get(name_object));
                             model.setLocalTranslation(Vector3f.ZERO);
                             model.setLocalRotation(Matrix3f.IDENTITY);
                             model.setLocalTransform(transform);
                         }
                         
                         // Update camera position
-                        if (name.equals(Constants.NAME_PRIME_OBJECT)) {
+                        if (name_object.equals(Constants.NAME_PRIME_OBJECT)) {
                             Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
                             Matrix4f transformation_inverse = transformation.invert();
                             Transform transform_camera = new Transform();
@@ -206,12 +212,12 @@ public class Client extends AbstractAppState {
                     System.out.println(mat);
                     break;
                 case Commands.TARGET_FOUND:
-                    name = readString();
+                    name_target = readString();
 //                    model = app.models.get(name);
 //                    model.setCullHint(Spatial.CullHint.Never);
                     break;
                 case Commands.TARGET_LOST:
-                    name = readString();
+                    name_target = readString();
 //                    model = app.models.get(name);
 //                    model.setCullHint(Spatial.CullHint.Always);
                     break;

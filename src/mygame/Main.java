@@ -67,6 +67,9 @@ public class Main extends SimpleApplication {
         
         models_trainers = new ArrayList<>();
         models_trainees = new ArrayList<>();
+        
+        // Load object configuration
+        ObjectConfig.init();
     }
 
     @Override
