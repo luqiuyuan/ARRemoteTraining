@@ -123,7 +123,8 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.SET_TRANSFORMATION:
                     String name_target = readString();
-                    String name_object = ObjectConfig.getObjectNameFromTargetName(name_target);
+//                    String name_object = ObjectConfig.getObjectNameFromTargetName(name_target);
+                    String name_object = name_target;
                     float[] nums_vector = readFloatArray(3);
                     float[] nums_vector_x = readFloatArray(3);
                     float[] nums_translation = readFloatArray(3);
@@ -154,10 +155,10 @@ public class Client extends AbstractAppState {
                         model.rotate(rotation);
                         model.rotate(rotation_x);
                         
-                        Matrix4f transformation_delta = ObjectConfig.getDeltaMatrix(name_object, name_target);
-                        Transform transform_delta = new Transform();
-                        transform_delta.fromTransformMatrix(transformation_delta);
-                        model.setLocalTransform(transform_delta);
+//                        Matrix4f transformation_delta = ObjectConfig.getDeltaMatrix(name_object, name_target);
+//                        Transform transform_delta = new Transform();
+//                        transform_delta.fromTransformMatrix(transformation_delta);
+//                        model.setLocalTransform(transform_delta);
                         
                         // Update the absolute transformation
                         this.transformations.put(name_object, model.getLocalTransform().toTransformMatrix());
@@ -204,10 +205,14 @@ public class Client extends AbstractAppState {
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
                     float[] nums = readFloatArray(16);
                     Matrix4f mat = new Matrix4f(nums);
-                    mat.set(0, 0, -mat.get(1, 0));
-                    mat.set(1, 1, mat.get(0, 1));
+                    mat.set(0, 0, -mat.get(0, 1));
+                    mat.set(1, 1, -mat.get(1, 0));
                     mat.set(1, 0, 0);
                     mat.set(0, 1, 0);
+                    mat.set(2, 1, 0);
+                    mat.set(2, 2, -mat.get(2, 2));
+                    mat.set(2, 3, mat.get(3, 2));
+                    mat.set(3, 2, -1);
                     cam.setProjectionMatrix(mat);
                     System.out.println(mat);
                     break;

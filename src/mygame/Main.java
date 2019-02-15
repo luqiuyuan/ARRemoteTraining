@@ -85,12 +85,12 @@ public class Main extends SimpleApplication {
     void initScene() {
         // Initialize model names
         model_names = new ArrayList<>();
-        model_names.add("PRIME_OBJECT");model_names.add("2");model_names.add("3");model_names.add("4");
+        model_names.add("0000");model_names.add("0001");model_names.add("0002");
         
         // Read models
         models = new HashMap<>();
         for (int i = 0; i < model_names.size(); i++) {
-            Box box = new Box(new Vector3f(0.0f, 0.0f, 0.25f), 0.5f, 0.36f, 0.25f);
+            Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
             Geometry geo = new Geometry(model_names.get(i), box);
             Material mat = new Material(assetManager,
               "Common/MatDefs/Light/Lighting.j3md");
