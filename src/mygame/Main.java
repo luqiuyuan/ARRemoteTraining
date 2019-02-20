@@ -96,8 +96,8 @@ public class Main extends SimpleApplication {
         }
         
         // Attach models
-//        for (int i = 0; i < model_names.size(); i++)
-//            rootNode.attachChild(models.get(model_names.get(i)));
+//        for (int i = 0; i < Component.getComponents().size(); i++)
+//            rootNode.attachChild(models.get(Component.getComponents().get(i).getName()));
         
         // Add ambient light
         AmbientLight al = new AmbientLight();

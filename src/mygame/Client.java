@@ -123,12 +123,12 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.SET_TRANSFORMATION:
                     String name_target = readString();
-//                    String name_object = ObjectConfig.getObjectNameFromTargetName(name_target);
-                    String name_object = name_target;
+                    Target target = Target.getTargets().get(name_target);
+                    String name_component = target.getNameComponent();
                     float[] nums_vector = readFloatArray(3);
                     float[] nums_vector_x = readFloatArray(3);
                     float[] nums_translation = readFloatArray(3);
-                    Spatial model = this.models.get(name_object);
+                    Spatial model = this.models.get(name_component);
                     if (model != null) {
                         Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
                         Vector3f axis_y = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -155,32 +155,45 @@ public class Client extends AbstractAppState {
                         model.rotate(rotation);
                         model.rotate(rotation_x);
                         
-//                        Matrix4f transformation_delta = ObjectConfig.getDeltaMatrix(name_object, name_target);
+                        Matrix4f transformation_origin = model.getLocalTransform().toTransformMatrix();
+                        
+                        Matrix4f transformation_delta = target.getTransformation();
+//                        System.out.println("origin:");
+//                        System.out.println(model.getLocalTransform().toTransformMatrix());
+//                        System.out.println("delta:");
+//                        System.out.println(transformation_delta);
 //                        Transform transform_delta = new Transform();
 //                        transform_delta.fromTransformMatrix(transformation_delta);
 //                        model.setLocalTransform(transform_delta);
+//                        System.out.println("after");
+//                        System.out.println(model.getLocalTransform().toTransformMatrix());
+
+                        Matrix4f transformation_new = transformation_delta.invert().mult(transformation_origin);
+                        Transform transform_new = new Transform();
+                        transform_new.fromTransformMatrix(transformation_new);
+                        model.setLocalTransform(transform_new);
                         
                         // Update the absolute transformation
-                        this.transformations.put(name_object, model.getLocalTransform().toTransformMatrix());
+                        this.transformations.put(name_component, model.getLocalTransform().toTransformMatrix());
                         
                         // Update the relative transformation
-                        if (name_object.equals(Constants.NAME_PRIME_OBJECT)) {
+                        if (name_component.equals(Constants.NAME_PRIME_OBJECT)) {
                             this.updateRelativeTransformationsForAll();
                         } else {
-                            this.updateRelativeTransformationsForName(name_object);
+                            this.updateRelativeTransformationsForName(name_component);
                         }
                         
                         // Reset model transformation
-                        if (this.transformations_relative.get(name_object) != null) {
+                        if (this.transformations_relative.get(name_component) != null) {
                             Transform transform = new Transform();
-                            transform.fromTransformMatrix(this.transformations_relative.get(name_object));
+                            transform.fromTransformMatrix(this.transformations_relative.get(name_component));
                             model.setLocalTranslation(Vector3f.ZERO);
                             model.setLocalRotation(Matrix3f.IDENTITY);
                             model.setLocalTransform(transform);
                         }
                         
                         // Update camera position
-                        if (name_object.equals(Constants.NAME_PRIME_OBJECT)) {
+                        if (name_component.equals(Constants.NAME_PRIME_OBJECT)) {
                             Matrix4f transformation = this.transformations.get(Constants.NAME_PRIME_OBJECT);
                             Matrix4f transformation_inverse = transformation.invert();
                             Transform transform_camera = new Transform();
