@@ -47,7 +47,6 @@ public class Main extends SimpleApplication {
     int clientCount = -1;
     
     // Models
-    ArrayList<String> model_names;
     Map<String, Spatial> models;
     ArrayList<Map<String, Spatial>> models_trainers;
     ArrayList<Map<String, Spatial>> models_trainees;
@@ -62,15 +61,15 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        // Load target configuration
+        assetManager.registerLoader(JSONLoader.class, "json");
+        assetManager.loadAsset("Configs/targets.json");
+        
         initScene();
         initSocket();
         
         models_trainers = new ArrayList<>();
         models_trainees = new ArrayList<>();
-        
-        // Load object configuration
-        assetManager.registerLoader(JSONLoader.class, "json");
-        ArrayList<Component> components = (ArrayList<Component>) assetManager.loadAsset("Configs/targets.json");
     }
 
     @Override
@@ -84,20 +83,16 @@ public class Main extends SimpleApplication {
     }
     
     void initScene() {
-        // Initialize model names
-        model_names = new ArrayList<>();
-        model_names.add("0000");model_names.add("0001");model_names.add("0002");
-        
         // Read models
         models = new HashMap<>();
-        for (int i = 0; i < model_names.size(); i++) {
+        for (int i = 0; i < Component.getComponents().size(); i++) {
             Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
-            Geometry geo = new Geometry(model_names.get(i), box);
+            Geometry geo = new Geometry(Component.getComponents().get(i).getName(), box);
             Material mat = new Material(assetManager,
               "Common/MatDefs/Light/Lighting.j3md");
             mat.setColor("Diffuse",ColorRGBA.Orange);
             geo.setMaterial(mat);
-            models.put(model_names.get(i), geo);
+            models.put(Component.getComponents().get(i).getName(), geo);
         }
         
         // Attach models
