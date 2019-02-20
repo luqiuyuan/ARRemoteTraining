@@ -3,8 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/AbstractVideoSender.java</file>
+            <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/JPGVideoSender.java</file>
+            <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/Config.java</file>
             <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/Client.java</file>
+            <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/Helper.java</file>
+            <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/Main.java</file>
             <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/ObjectConfig.java</file>
+            <file>file:/Users/lu/Documents/projects/ar_remote_training_server/src/mygame/Constants.java</file>
         </group>
     </open-files>
 </project-private>

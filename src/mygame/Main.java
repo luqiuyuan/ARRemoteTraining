@@ -69,7 +69,8 @@ public class Main extends SimpleApplication {
         models_trainees = new ArrayList<>();
         
         // Load object configuration
-        ObjectConfig.init();
+        assetManager.registerLoader(JSONLoader.class, "json");
+        ArrayList<Component> components = (ArrayList<Component>) assetManager.loadAsset("Configs/targets.json");
     }
 
     @Override
