@@ -95,10 +95,6 @@ public class Main extends SimpleApplication {
             models.put(Component.getComponents().get(i).getName(), geo);
         }
         
-        // Attach models
-//        for (int i = 0; i < Component.getComponents().size(); i++)
-//            rootNode.attachChild(models.get(Component.getComponents().get(i).getName()));
-        
         // Add ambient light
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(0.3f));
