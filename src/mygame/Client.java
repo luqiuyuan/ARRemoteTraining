@@ -137,7 +137,7 @@ public class Client extends AbstractAppState {
                         Quaternion rotation = new Quaternion();
                         rotation.fromAngleAxis((float) angle, rotation_axis_y.normalize());
                         
-                        Vector3f vector_x = new Vector3f(-nums_vector_x[0], -nums_vector_x[1], -nums_vector_x[2]);
+                        Vector3f vector_x = new Vector3f(nums_vector_x[0], nums_vector_x[1], nums_vector_x[2]);
                         Vector3f axis_x = new Vector3f(1.0f, 0.0f, 0.0f);
                         Vector3f axis_x_rotated = rotation.mult(axis_x);
                         Vector3f rotation_axis_x = axis_x_rotated.cross(vector_x);
@@ -154,21 +154,10 @@ public class Client extends AbstractAppState {
                         model.getLocalTransform().setScale(1.0f);
                         model.rotate(rotation);
                         model.rotate(rotation_x);
-                        
-                        Matrix4f transformation_origin = model.getLocalTransform().toTransformMatrix();
-                        
-                        Matrix4f transformation_delta = target.getTransformation();
-//                        System.out.println("origin:");
-//                        System.out.println(model.getLocalTransform().toTransformMatrix());
-//                        System.out.println("delta:");
-//                        System.out.println(transformation_delta);
-//                        Transform transform_delta = new Transform();
-//                        transform_delta.fromTransformMatrix(transformation_delta);
-//                        model.setLocalTransform(transform_delta);
-//                        System.out.println("after");
-//                        System.out.println(model.getLocalTransform().toTransformMatrix());
 
-                        Matrix4f transformation_new = transformation_delta.invert().mult(transformation_origin);
+                        Matrix4f transformation_origin = model.getLocalTransform().toTransformMatrix();
+                        Matrix4f transformation_delta = target.getTransformation();
+                        Matrix4f transformation_new = transformation_origin.mult(transformation_delta.invert());
                         Transform transform_new = new Transform();
                         transform_new.fromTransformMatrix(transformation_new);
                         model.setLocalTransform(transform_new);
