@@ -13,6 +13,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.util.TangentBinormalGenerator;
+import com.jme3.asset.AssetNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -86,13 +87,21 @@ public class Main extends SimpleApplication {
         // Read models
         models = new HashMap<>();
         for (int i = 0; i < Component.getComponents().size(); i++) {
-            Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
-            Geometry geo = new Geometry(Component.getComponents().get(i).getName(), box);
-            Material mat = new Material(assetManager,
-              "Common/MatDefs/Light/Lighting.j3md");
-            mat.setColor("Diffuse",ColorRGBA.Orange);
-            geo.setMaterial(mat);
-            models.put(Component.getComponents().get(i).getName(), geo);
+            Spatial model;
+            
+            try {
+                model = (Spatial) assetManager.loadModel("Models/" + Component.getComponents().get(i).getName() + ".obj");
+            } catch (AssetNotFoundException e) {
+                Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
+                Geometry geo = new Geometry(Component.getComponents().get(i).getName(), box);
+                Material mat = new Material(assetManager,
+                  "Common/MatDefs/Light/Lighting.j3md");
+                mat.setColor("Diffuse",ColorRGBA.Orange);
+                geo.setMaterial(mat);
+                model = (Spatial) geo;
+            }
+            
+            models.put(Component.getComponents().get(i).getName(), model);
         }
         
         // Add ambient light
