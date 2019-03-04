@@ -107,11 +107,11 @@ public class Client extends AbstractAppState {
     }
     
     private void receiveInteraction() {
-        int command = readCommand();
+        int command = Network.readCommand(input);
         while (command != Commands.NO_COMMAND) {
             switch(command) {
                 case Commands.SET_ROLE:
-                    String role_in = readString();
+                    String role_in = Network.readString(input);
                     this.setRole(role_in);
                     // Add the client to trainers or trainees
                     if (this.role.equals(Constants.NAME_TRAINER)) {
@@ -126,12 +126,12 @@ public class Client extends AbstractAppState {
                     }
                     break;
                 case Commands.SET_TRANSFORMATION:
-                    String name_target = readString();
+                    String name_target = Network.readString(input);
                     Target target = Target.getTargets().get(name_target);
                     String name_component = target.getNameComponent();
-                    float[] nums_vector = readFloatArray(3);
-                    float[] nums_vector_x = readFloatArray(3);
-                    float[] nums_translation = readFloatArray(3);
+                    float[] nums_vector = Network.readFloatArray(3, input);
+                    float[] nums_vector_x = Network.readFloatArray(3, input);
+                    float[] nums_translation = Network.readFloatArray(3, input);
                     Spatial model = this.models.get(name_component);
                     if (model != null) {
                         Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
@@ -200,8 +200,8 @@ public class Client extends AbstractAppState {
                     }
                     break;
                 case Commands.RESOLUTION:
-                    this.height = readInt();
-                    this.width = readInt();
+                    this.height = Network.readInt(input);
+                    this.width = Network.readInt(input);
                     if (Config.DEUBG_MODE) {
                         System.out.println("Client #" + this.id + ": set resolution as " + this.width + " (width)" + " : " + this.height + " (height)");
                     }
@@ -209,7 +209,7 @@ public class Client extends AbstractAppState {
                     cam.setFrustumPerspective(80.0f, 1, aspect_ratio, 10000);
                     break;
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
-                    float[] nums = readFloatArray(16);
+                    float[] nums = Network.readFloatArray(16, input);
                     Matrix4f mat = new Matrix4f(nums);
                     mat.set(0, 0, -mat.get(0, 1));
                     mat.set(1, 1, -mat.get(1, 0));
@@ -223,11 +223,11 @@ public class Client extends AbstractAppState {
                     System.out.println(mat);
                     break;
                 case Commands.TARGET_FOUND:
-                    name_target = readString();
+                    name_target = Network.readString(input);
                     founds.put(name_target, true);
                     break;
                 case Commands.TARGET_LOST:
-                    name_target = readString();
+                    name_target = Network.readString(input);
                     founds.put(name_target, false);
                     break;
                 case Commands.REQUEST_FRAME:
@@ -235,86 +235,8 @@ public class Client extends AbstractAppState {
                     break;
             }
             
-            command = readCommand();
+            command = Network.readCommand(input);
         }
-    }
-    
-    public int readCommand(){
-        int command = Commands.NO_COMMAND;
-        try {
-            if (input.available() >= 4) {
-                byte bytes[] = new byte[4];
-                input.read(bytes);
-                command = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getInt();
-            }
-        } catch (IOException e) {
-            System.err.println("Reading operation failed.");
-            System.exit(1);
-        }
-        return command;
-    }
-    
-    float[] readFloatArray(int length) {
-        float[] arr = new float[length];
-        
-        for (int i = 0; i < length; i++) {
-            arr[i] = readFloat();
-        }
-        
-        return arr;
-    }
-    
-    int readInt(){
-        int intNum = -1;
-        try {
-            byte bytes[] = new byte[4];
-            int index = 0;
-            while (index < 4)
-            {
-                int bytesRead = input.read(bytes, index, 4 - index);
-                index += bytesRead;
-            }
-            intNum = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getInt();
-        } catch (IOException e) {
-            System.err.println("Reading operation failed.");
-            System.exit(1);
-        }
-        return intNum;
-    }
-    
-    String readString() {
-        int length = readInt();
-        byte[] data = new byte[length];
-        try {
-            int index = 0;
-            while (index < length)
-            {
-                int bytesRead = input.read(data, index, length - index);
-                index += bytesRead;
-            }
-        } catch (IOException e) {
-            System.err.println("Reading operation failed.");
-            System.exit(1);
-        }
-        return new String(data);
-    }
-    
-    float readFloat() {
-        float delta = 0;
-        try {
-            byte[] data = new byte[4];
-            int index = 0;
-            while (index < 4)
-            {
-                int bytesRead = input.read(data, index, 4 - index);
-                index += bytesRead;
-            }
-            delta = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN).getFloat();
-        } catch (IOException e) {
-            System.err.println("Reading float failed.");
-            System.exit(1);
-        }
-        return delta;
     }
     
     void setJPGVideoSender(JPGVideoSender sender) {

@@ -42,12 +42,10 @@ public class JPGVideoSender extends AbstractVideoSender{
             
             ByteArrayOutputStream imageByteOutputStream = new ByteArrayOutputStream();
             ImageIO.write(rawFrame, "png", imageByteOutputStream);
-            byte[] commandBytes = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(Commands.IMAGE).array();
             byte[] imageBytes = imageByteOutputStream.toByteArray();
-            byte[] lengthBytes = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(imageBytes.length).array();
-            output.write(commandBytes);
-            output.write(lengthBytes);
-            output.write(imageBytes);
+            Network.sendInt(Commands.IMAGE, output);
+            Network.sendInt(imageBytes.length, output);
+            Network.sendBytes(imageBytes, output);
         }
         catch (IOException e) {e.printStackTrace();}
     }
