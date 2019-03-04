@@ -69,6 +69,8 @@ public class Client extends AbstractAppState {
     
     Map<String, Spatial> models;
     
+    Map<String, Boolean> founds;
+    
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
@@ -83,6 +85,8 @@ public class Client extends AbstractAppState {
         // Initialize models
         this.models = this.app.cloneModels();
         this.attachModels();
+        
+        this.founds = new HashMap<>();
         
         System.out.println("Created client: " + this.id);
     }
@@ -220,13 +224,11 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.TARGET_FOUND:
                     name_target = readString();
-//                    model = app.models.get(name);
-//                    model.setCullHint(Spatial.CullHint.Never);
+                    founds.put(name_target, true);
                     break;
                 case Commands.TARGET_LOST:
                     name_target = readString();
-//                    model = app.models.get(name);
-//                    model.setCullHint(Spatial.CullHint.Always);
+                    founds.put(name_target, false);
                     break;
                 case Commands.REQUEST_FRAME:
                     this.sender.start();

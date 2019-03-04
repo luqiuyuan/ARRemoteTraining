@@ -32,6 +32,7 @@ import com.jme3.util.BufferUtils;
 import com.jme3.util.Screenshots;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -120,8 +121,18 @@ public abstract class AbstractVideoSender
         }
         
         if (Config.SHOW_OWN_MODELS) {
+            Map<String, Boolean> founds_model = new HashMap<>();
+            for (Map.Entry<String, Boolean> entry : this.client.founds.entrySet()) {
+                if (entry.getValue() != null && entry.getValue() == true) {
+                    Target target = Target.getTargets().get(entry.getKey());
+                    String name_component = target.getNameComponent();
+                    founds_model.put(name_component, true);
+                }
+            }
             for (Map.Entry<String, Spatial> entry : this.client.models.entrySet()) {
-                entry.getValue().setCullHint(Spatial.CullHint.Never);
+                if (founds_model.get(entry.getKey()) != null) {
+                    entry.getValue().setCullHint(Spatial.CullHint.Never);
+                }
             }
         }
     }
