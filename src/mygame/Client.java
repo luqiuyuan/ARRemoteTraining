@@ -71,6 +71,8 @@ public class Client extends AbstractAppState {
     
     Map<String, Boolean> founds;
     
+    ComponentConfiguration component_configuration;
+    
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
@@ -127,11 +129,13 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.SET_TRANSFORMATION:
                     String name_target = Network.readString(input);
-                    Target target = Target.getTargets().get(name_target);
-                    String name_component = target.getNameComponent();
                     float[] nums_vector = Network.readFloatArray(3, input);
                     float[] nums_vector_x = Network.readFloatArray(3, input);
                     float[] nums_translation = Network.readFloatArray(3, input);
+                    // After reading all inputs, check if target configuration has been set
+                    if (this.component_configuration == null) break;
+                    Target target = Target.getTargets().get(name_target);
+                    String name_component = target.getNameComponent();
                     Spatial model = this.models.get(name_component);
                     if (model != null) {
                         Vector3f vector_y = new Vector3f(nums_vector[0], nums_vector[1], nums_vector[2]);
@@ -232,6 +236,13 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.REQUEST_FRAME:
                     this.sender.start();
+                    break;
+                case Commands.SET_TARGET_CONFIGURATION:
+                    String target_configuration_str = Network.readString(input);
+                    if (Config.DEUBG_MODE) {
+                        System.out.println("Client #" + this.id + ": sent target configuration: " + target_configuration_str);
+                    }
+                    this.component_configuration = new ComponentConfiguration(target_configuration_str);
                     break;
             }
             

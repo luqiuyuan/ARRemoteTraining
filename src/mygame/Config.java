@@ -14,8 +14,8 @@ public class Config {
     public static final boolean DEUBG_MODE = true;
     public static final boolean SAVE_IMAGES_TO_DISK = false;
     
-    public static final float TRANSLATION_THRESHOLD = 2.0f;
-    public static final float ROTATION_THRESHOLD = 50.0f;
+    public static final float TRANSLATION_THRESHOLD = 0.5f;
+    public static final float ROTATION_THRESHOLD = 10.0f;
     
     public static final boolean SHOW_OWN_MODELS = true;
     

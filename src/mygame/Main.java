@@ -62,10 +62,6 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        // Load target configuration
-        assetManager.registerLoader(JSONLoader.class, "json");
-        assetManager.loadAsset("Configs/targets.json");
-        
         initScene();
         initSocket();
         
@@ -84,24 +80,26 @@ public class Main extends SimpleApplication {
     }
     
     void initScene() {
+        // Load model names
+        assetManager.registerLoader(JSONLoader.class, "json");
+        ArrayList<String> model_names = (ArrayList<String>) assetManager.loadAsset("Configs/model_names.json");
+
         // Read models
         models = new HashMap<>();
-        for (int i = 0; i < Component.getComponents().size(); i++) {
+        for (String name : model_names) {
             Spatial model;
-            
             try {
-                model = (Spatial) assetManager.loadModel("Models/" + Component.getComponents().get(i).getName() + ".obj");
+                model = (Spatial) assetManager.loadModel("Models/" + name + ".obj");
             } catch (AssetNotFoundException e) {
                 Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
-                Geometry geo = new Geometry(Component.getComponents().get(i).getName(), box);
+                Geometry geo = new Geometry(name, box);
                 Material mat = new Material(assetManager,
                   "Common/MatDefs/Light/Lighting.j3md");
                 mat.setColor("Diffuse",ColorRGBA.Orange);
                 geo.setMaterial(mat);
                 model = (Spatial) geo;
             }
-            
-            models.put(Component.getComponents().get(i).getName(), model);
+            models.put(name, model);
         }
         
         // Add ambient light
@@ -121,7 +119,7 @@ public class Main extends SimpleApplication {
     
     public void initSocket() {
         // remove the default rendering view port
-//        renderManager.removeMainView("Default");
+        renderManager.removeMainView("Default");
 
         executor = new ScheduledThreadPoolExecutor(MAX_NUM_THREADS);
         socket_waiter = new Callable<Void>() {

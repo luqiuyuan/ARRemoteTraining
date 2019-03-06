@@ -11,7 +11,7 @@ package mygame;
  */
 public class Constants {
     
-    public static final String NAME_PRIME_OBJECT = "PRIME_OBJECT";
+    public static final String NAME_PRIME_OBJECT = "body";
 
     public static final String NAME_TRAINER = "TRAINER";
     public static final String NAME_TRAINEE = "TRAINEE";

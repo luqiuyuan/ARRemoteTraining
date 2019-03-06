@@ -18,13 +18,9 @@ public class Component {
     private final String name;
     private final ArrayList<Target> targets;
     
-    private static final ArrayList<Component> components = new ArrayList<>();
-    
     public Component(String name) {
         this.name = name;
         targets = new ArrayList<>();
-        
-        components.add(this);
     }
     
     public void addTarget(String name_target, Matrix4f transformation) {
@@ -36,6 +32,5 @@ public class Component {
     // Getters and Setters
     public String getName() { return name; }
     public ArrayList<Target> getTargets() { return targets; }
-    public static ArrayList<Component> getComponents() { return components; }
     
 }
