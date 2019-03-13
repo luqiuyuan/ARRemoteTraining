@@ -110,7 +110,7 @@ public abstract class AbstractVideoSender
             this.setFps(1.0 / tpf);
         }
 
-        if (this.client.render_maps != null) {
+        if (this.client.render_maps != null && this.client.founds_model.get(Constants.NAME_PRIME_OBJECT) != null && this.client.founds_model.get(Constants.NAME_PRIME_OBJECT) == true) {
             for (int i = 0; i < this.client.render_maps.size(); i++) {
                 for (int j = 0; j < this.client.render_maps.get(i).size(); j++) {
                     String name = this.client.render_maps.get(i).get(j);

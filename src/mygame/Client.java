@@ -71,6 +71,7 @@ public class Client extends AbstractAppState {
     Map<String, Spatial> models;
     
     Map<String, Boolean> founds;
+    Map<String, Boolean> founds_model;
     
     ComponentConfiguration component_configuration;
     
@@ -94,6 +95,7 @@ public class Client extends AbstractAppState {
         this.attachModels();
         
         this.founds = new HashMap<>();
+        this.founds_model = new HashMap<>();
         
         System.out.println("Created client: " + this.id);
         
@@ -239,11 +241,17 @@ public class Client extends AbstractAppState {
                     break;
                 case Commands.TARGET_FOUND:
                     name_target = Network.readString(input);
+                    target = Target.getTargets().get(name_target);
+                    name_component = target.getNameComponent();
                     founds.put(name_target, true);
+                    founds_model.put(name_component, true);
                     break;
                 case Commands.TARGET_LOST:
                     name_target = Network.readString(input);
+                    target = Target.getTargets().get(name_target);
+                    name_component = target.getNameComponent();
                     founds.put(name_target, false);
+                    founds_model.put(name_component, false);
                     break;
                 case Commands.REQUEST_FRAME:
                     this.sender.start();
