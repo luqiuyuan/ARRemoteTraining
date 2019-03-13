@@ -66,6 +66,9 @@ public abstract class AbstractVideoSender
     // bounding box
     int bounding_box_pos[];
     int bounding_box_dim[];
+    
+    // Frame count
+    private int frame_no = 0;
 
     public AbstractVideoSender(Main app, Client client, OutputStream output) throws IOException {
         this.app = app;
@@ -169,6 +172,8 @@ public abstract class AbstractVideoSender
                 entry.getValue().setCullHint(Spatial.CullHint.Always);
             }
         }
+        
+        frame_no++;
     }
 
     public void cleanup() {

@@ -1,10 +1,10 @@
 # Blender MTL File: 'phone_v2.blend'
 # Material Count: 1
 
-newmtl Material.002
+newmtl Material.009
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
-Kd 0.027876 0.800000 0.493973
+Kd 0.778756 0.209801 0.013446
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
