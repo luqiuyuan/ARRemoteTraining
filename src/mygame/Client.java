@@ -26,6 +26,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Date;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
@@ -73,6 +74,10 @@ public class Client extends AbstractAppState {
     
     ComponentConfiguration component_configuration;
     
+    // Heartbeat
+    private static final int HEARTBEAT_INTERVAL_IN_MILLISECONDS = 500;
+    private long heartbeat_timestamp_last;
+    
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
@@ -91,6 +96,9 @@ public class Client extends AbstractAppState {
         this.founds = new HashMap<>();
         
         System.out.println("Created client: " + this.id);
+        
+        // Initialize the last timestamp of heartbeat to the time of creating the client instance
+        heartbeat_timestamp_last = new Date().getTime();
     }
     
     public void initializeCamera() {
@@ -100,6 +108,9 @@ public class Client extends AbstractAppState {
     
     @Override
     public void update(float tpf) {
+        // other operations
+        otherOperations();
+        
         // interaction
         receiveInteraction();
 
@@ -315,6 +326,19 @@ public class Client extends AbstractAppState {
         for (Map.Entry<String, Spatial> entry : this.models.entrySet()) {
             entry.getValue().setCullHint(Spatial.CullHint.Always);
             this.app.getRootNode().attachChild(entry.getValue());
+        }
+    }
+    
+    private void otherOperations() {
+        // Send heartbeat
+        sendHeartbeat();
+    }
+    
+    private void sendHeartbeat() {
+        long heartbeat_timestamp = new Date().getTime();
+        if (heartbeat_timestamp - heartbeat_timestamp_last >= HEARTBEAT_INTERVAL_IN_MILLISECONDS) {
+            Network.sendInt(Commands.HEARTBEAT, output);
+            heartbeat_timestamp_last = heartbeat_timestamp;
         }
     }
 }

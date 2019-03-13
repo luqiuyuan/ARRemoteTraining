@@ -21,5 +21,6 @@ public class Commands {
     protected static final int TARGET_LOST = 7;
     protected static final int REQUEST_FRAME = 8;
     protected static final int SET_TARGET_CONFIGURATION = 9;
+    protected static final int HEARTBEAT = 10;
     
 }
