@@ -75,6 +75,9 @@ public class Client extends AbstractAppState {
     
     ComponentConfiguration component_configuration;
     
+    // Arrows
+    Map<String, Arrow> arrows;
+    
     // Heartbeat
     private static final int HEARTBEAT_INTERVAL_IN_MILLISECONDS = 500;
     private long heartbeat_timestamp_last;
@@ -101,6 +104,9 @@ public class Client extends AbstractAppState {
         
         // Initialize the last timestamp of heartbeat to the time of creating the client instance
         heartbeat_timestamp_last = new Date().getTime();
+        
+        // Initialize the arrows
+        this.arrows = new HashMap<>();
     }
     
     public void initializeCamera() {
@@ -110,6 +116,9 @@ public class Client extends AbstractAppState {
     
     @Override
     public void update(float tpf) {
+        // Initialization for update
+        initializationForUpdate();
+        
         // other operations
         otherOperations();
         
@@ -269,6 +278,13 @@ public class Client extends AbstractAppState {
         }
     }
     
+    private void initializationForUpdate() {
+        // Detach all arrows at the beginning of every frame
+        for (Map.Entry<String, Arrow> entry : this.arrows.entrySet()) {
+            entry.getValue().detachFrom(this.app.getRootNode());
+        }
+    }
+    
     void setJPGVideoSender(JPGVideoSender sender) {
         this.sender = sender;
     }
@@ -297,6 +313,23 @@ public class Client extends AbstractAppState {
                     
                     if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
                         render_map.add(entry.getKey());
+                        // Show an arrow pointing from current location to destinational location.
+                        // Only show it for trainees and when current location is known.
+                        if (this.role.equals(Constants.NAME_TRAINEE) && this.founds_model.get(entry.getKey()) != null) {
+                            Arrow arrow;
+                            if (this.arrows.get(entry.getKey()) == null) { // If the arrow has not been created, create it.
+                                arrow = new Arrow(Vector3f.ZERO, Vector3f.ZERO, new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.5f), this.app.getAssetManager());
+                                arrow.hide(); // The arrow is created in hidden state
+                                this.arrows.put(entry.getKey(), arrow);
+                            }
+                            arrow = this.arrows.get(entry.getKey());
+                            Matrix4f transformation_start = this.transformations_relative.get(entry.getKey());
+                            Matrix4f transformation_end = entry.getValue();
+                            Vector3f location_start = new Vector3f(transformation_start.m03, transformation_start.m13, transformation_start.m23);
+                            Vector3f location_end = new Vector3f(transformation_end.m03, transformation_end.m13, transformation_end.m23);
+                            arrow.update(location_start, location_end);
+                            arrow.attachTo(this.app.getRootNode());
+                        }
                     }
                 }
             }
