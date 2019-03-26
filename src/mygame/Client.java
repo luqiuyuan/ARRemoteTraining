@@ -369,11 +369,17 @@ public class Client extends AbstractAppState {
     }
     
     private void updateArrow(String name_component, Matrix4f transformation_end) {
-        // Only show it for trainees and when current location is known.
-        if (this.role.equals(Constants.NAME_TRAINEE) && this.founds_model.get(name_component) != null && this.founds_model.get(name_component) == true) {
+        // Only show it for trainees and when current location is known,
+        // the object is being tracked,
+        // and the prime object is being tracked.
+        if (this.role.equals(Constants.NAME_TRAINEE)
+            && this.founds_model.get(name_component) != null
+            && this.founds_model.get(name_component) == true
+            && this.founds_model.get(Constants.NAME_PRIME_OBJECT) != null
+            && this.founds_model.get(Constants.NAME_PRIME_OBJECT) == true) {
             Arrow arrow;
             if (this.arrows.get(name_component) == null) { // If the arrow has not been created, create it.
-                arrow = new Arrow(Vector3f.ZERO, Vector3f.ZERO, new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.5f), this.app.getAssetManager());
+                arrow = new Arrow(Vector3f.ZERO, Vector3f.ZERO, new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.7f), this.app.getAssetManager());
                 arrow.hide(); // The arrow is created in hidden state
                 this.arrows.put(name_component, arrow);
             }
