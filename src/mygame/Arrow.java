@@ -54,6 +54,16 @@ public class Arrow extends Geometry {
         }
     }
     
+    public void show() {
+        stick.setCullHint(Spatial.CullHint.Never);
+        cone.setCullHint(Spatial.CullHint.Never);
+    }
+    
+    public void hide() {
+        stick.setCullHint(Spatial.CullHint.Always);
+        cone.setCullHint(Spatial.CullHint.Always);
+    }
+    
     private void initStick(Vector3f start, Vector3f end, ColorRGBA color) {
         float length = end.subtract(start).length() - 0.4f;
         Cylinder c = new Cylinder(2, 100, 0.1f, 1, true);
