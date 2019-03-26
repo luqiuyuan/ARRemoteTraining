@@ -314,22 +314,7 @@ public class Client extends AbstractAppState {
                     if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
                         render_map.add(entry.getKey());
                         // Show an arrow pointing from current location to destinational location.
-                        // Only show it for trainees and when current location is known.
-                        if (this.role.equals(Constants.NAME_TRAINEE) && this.founds_model.get(entry.getKey()) != null) {
-                            Arrow arrow;
-                            if (this.arrows.get(entry.getKey()) == null) { // If the arrow has not been created, create it.
-                                arrow = new Arrow(Vector3f.ZERO, Vector3f.ZERO, new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.5f), this.app.getAssetManager());
-                                arrow.hide(); // The arrow is created in hidden state
-                                this.arrows.put(entry.getKey(), arrow);
-                            }
-                            arrow = this.arrows.get(entry.getKey());
-                            Matrix4f transformation_start = this.transformations_relative.get(entry.getKey());
-                            Matrix4f transformation_end = entry.getValue();
-                            Vector3f location_start = new Vector3f(transformation_start.m03, transformation_start.m13, transformation_start.m23);
-                            Vector3f location_end = new Vector3f(transformation_end.m03, transformation_end.m13, transformation_end.m23);
-                            arrow.update(location_start, location_end);
-                            arrow.attachTo(this.app.getRootNode());
-                        }
+                        updateArrow(entry.getKey(), entry.getValue());
                     }
                 }
             }
@@ -380,6 +365,24 @@ public class Client extends AbstractAppState {
         if (heartbeat_timestamp - heartbeat_timestamp_last >= HEARTBEAT_INTERVAL_IN_MILLISECONDS) {
             Network.sendInt(Commands.HEARTBEAT, output);
             heartbeat_timestamp_last = heartbeat_timestamp;
+        }
+    }
+    
+    private void updateArrow(String name_component, Matrix4f transformation_end) {
+        // Only show it for trainees and when current location is known.
+        if (this.role.equals(Constants.NAME_TRAINEE) && this.founds_model.get(name_component) != null) {
+            Arrow arrow;
+            if (this.arrows.get(name_component) == null) { // If the arrow has not been created, create it.
+                arrow = new Arrow(Vector3f.ZERO, Vector3f.ZERO, new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.5f), this.app.getAssetManager());
+                arrow.hide(); // The arrow is created in hidden state
+                this.arrows.put(name_component, arrow);
+            }
+            arrow = this.arrows.get(name_component);
+            Matrix4f transformation_start = this.transformations_relative.get(name_component);
+            Vector3f location_start = new Vector3f(transformation_start.m03, transformation_start.m13, transformation_start.m23);
+            Vector3f location_end = new Vector3f(transformation_end.m03, transformation_end.m13, transformation_end.m23);
+            arrow.update(location_start, location_end);
+            arrow.attachTo(this.app.getRootNode());
         }
     }
 }
