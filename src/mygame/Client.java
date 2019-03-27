@@ -238,7 +238,6 @@ public class Client extends AbstractAppState {
                     float[] nums = Network.readFloatArray(16, input);
                     Matrix4f mat = new Matrix4f(nums);
                     mat.set(1, 1, -mat.get(1, 1));
-//                    mat.set(2, 1, 0);
                     mat.set(2, 2, -mat.get(2, 2));
                     mat.set(2, 3, mat.get(3, 2));
                     mat.set(3, 2, -1);
