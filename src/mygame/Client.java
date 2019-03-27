@@ -301,6 +301,7 @@ public class Client extends AbstractAppState {
             ArrayList<String> render_map = new ArrayList<>();
             render_maps.add(render_map);
             Client opposite = opposites.get(i);
+            ArrayList<String> dones = new ArrayList<>();
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
                     // Do NOT render a model if it is NOT away from its starting position
@@ -311,8 +312,18 @@ public class Client extends AbstractAppState {
                         render_map.add(entry.getKey());
                         // Show an arrow pointing from current location to destinational location.
                         updateArrow(entry.getKey(), entry.getValue());
+                    } else {
+                        dones.add(entry.getKey());
                     }
                 }
+            }
+            
+            // Send the names of components that are aligned to the client
+            Network.sendInt(Commands.DONES, output);
+            Network.sendInt(dones.size()+1, output);
+            Network.sendString(Constants.NAME_PRIME_OBJECT, output);
+            for (String name_component : dones) {
+                Network.sendString(name_component, output);
             }
         }
     }
