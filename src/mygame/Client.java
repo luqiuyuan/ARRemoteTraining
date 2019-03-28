@@ -306,12 +306,14 @@ public class Client extends AbstractAppState {
             ArrayList<String> dones = new ArrayList<>();
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
-                    // Do NOT render a model if it is NOT away from its starting position
-                    if (!opposite.hasMoved(entry.getKey())) {
-                        if (!Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue())) {
-                            opposite.markAsHasMoved(entry.getKey());
-                        } else {
-                            continue;
+                    // Do NOT render a model to the trainee if it is NOT away from its starting position
+                    if (this.role.equals(Constants.NAME_TRAINEE)) {
+                        if (!opposite.hasMoved(entry.getKey())) {
+                            if (!Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue())) {
+                                opposite.markAsHasMoved(entry.getKey());
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     
