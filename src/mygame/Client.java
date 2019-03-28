@@ -54,6 +54,7 @@ public class Client extends AbstractAppState {
     private Map<String, Matrix4f> transformations;
     private Map<String, Matrix4f> transformations_relative;
     private Map<String, Matrix4f> transformations_relative_start;
+    private Map<String, Boolean> has_moved; // has a component moved from its starting status?
     
     // Reference object
     String referenceName = "hexagon";
@@ -92,6 +93,7 @@ public class Client extends AbstractAppState {
         transformations = new HashMap<>();
         transformations_relative = new HashMap<>();
         transformations_relative_start = new HashMap<>();
+        has_moved = new HashMap();
         
         // Initialize models
         this.models = this.app.cloneModels();
@@ -157,6 +159,9 @@ public class Client extends AbstractAppState {
                     // After reading all inputs, check if target configuration has been set
                     if (this.component_configuration == null) break;
                     Target target = Target.getTargets().get(name_target);
+                    if (Config.DEUBG_MODE && target == null) {
+                        System.err.println("Target with name " + name_target + "is not in the configuration.");
+                    }
                     String name_component = target.getNameComponent();
                     Spatial model = this.models.get(name_component);
                     if (model != null) {
@@ -285,9 +290,6 @@ public class Client extends AbstractAppState {
         this.sender = sender;
     }
     
-    String getRole() { return this.role; }
-    void setRole(String role) { this.role = role; }
-    
     void updateRenderMap() {
         ArrayList<Client> opposites;
         if (this.role.equals(Constants.NAME_TRAINER)) {
@@ -305,8 +307,13 @@ public class Client extends AbstractAppState {
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
                     // Do NOT render a model if it is NOT away from its starting position
-                    if (Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue()))
-                        continue;
+                    if (!opposite.hasMoved(entry.getKey())) {
+                        if (!Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue())) {
+                            opposite.markAsHasMoved(entry.getKey());
+                        } else {
+                            continue;
+                        }
+                    }
                     
                     if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
                         render_map.add(entry.getKey());
@@ -398,4 +405,23 @@ public class Client extends AbstractAppState {
             arrow.attachTo(this.app.getRootNode());
         }
     }
+    
+    private boolean hasMoved(String name_component) {
+        if (has_moved.get(name_component) == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    private void markAsHasMoved(String name_component) {
+        has_moved.put(name_component, true);
+    }
+    
+    //================================
+    // Setters and Getters
+    //================================
+    
+    String getRole() { return this.role; }
+    void setRole(String role) { this.role = role; }
+    
 }
