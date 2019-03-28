@@ -92,10 +92,6 @@ public class Main extends SimpleApplication {
             Spatial model;
             try {
                 model = assetManager.loadModel("Models/" + name + ".obj");
-//                Material mat = ((Geometry) model).getMaterial();
-//                mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-//                ((Geometry) model).setMaterial(mat);
-                model.setQueueBucket(RenderQueue.Bucket.Transparent);
             } catch (AssetNotFoundException e) {
                 Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
                 Geometry geo = new Geometry(name, box);
