@@ -6,30 +6,20 @@
 package mygame;
 
 import com.jme3.app.state.AbstractAppState;
-import com.jme3.input.ChaseCamera;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Transform;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.math.Vector4f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
-import com.jme3.scene.shape.Box;
 
 /**
  *
@@ -83,6 +73,12 @@ public class Client extends AbstractAppState {
     private static final int HEARTBEAT_INTERVAL_IN_MILLISECONDS = 500;
     private long heartbeat_timestamp_last;
     
+    // Dones
+    ArrayList<String> dones;
+    
+    // Tasks
+    ArrayList<String> tasks;
+    
     public Client(Main app, InputStream input, OutputStream output, int id) {
         this.app = app;
         this.input = input;
@@ -109,6 +105,12 @@ public class Client extends AbstractAppState {
         
         // Initialize the arrows
         this.arrows = new HashMap<>();
+        
+        // Dones
+        dones = new ArrayList<>();
+        
+        // Tasks
+        tasks = new ArrayList<>();
     }
     
     public void initializeCamera() {
@@ -303,7 +305,8 @@ public class Client extends AbstractAppState {
             ArrayList<String> render_map = new ArrayList<>();
             render_maps.add(render_map);
             Client opposite = opposites.get(i);
-            ArrayList<String> dones = new ArrayList<>();
+            ArrayList<String> dones_old = dones;
+            dones = new ArrayList<>();
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
                     // Do NOT render a model to the trainee if it is NOT away from its starting position
@@ -332,6 +335,43 @@ public class Client extends AbstractAppState {
             Network.sendInt(dones.size()+1, output);
             Network.sendString(Constants.NAME_PRIME_OBJECT, output);
             for (String name_component : dones) {
+                Network.sendString(name_component, output);
+            }
+            
+            // Tasks
+            Map<String, Boolean> has_moved_temp;
+            if (this.role.equals(Constants.NAME_TRAINER)) {
+                has_moved_temp = has_moved;
+            } else {
+                has_moved_temp = opposite.has_moved;
+            }
+            for (Map.Entry<String, Boolean> entry : has_moved_temp.entrySet()) {
+                boolean found_in_tasks = false, found_in_dones = false;
+                for (String name_component : tasks) {
+                    if (entry.getKey().equals(name_component)) {
+                        found_in_tasks = true;
+                        break;
+                    }
+                }
+                for (String name_component : dones) {
+                    if (entry.getKey().equals(name_component)) {
+                        found_in_dones = true;
+                        break;
+                    }
+                }
+                if (!found_in_tasks && !found_in_dones) { // A new task
+                    tasks.add(entry.getKey());
+                }
+                if (found_in_tasks && found_in_dones) { // A just complete task
+                    for (int j = 0; j < tasks.size(); j++) {
+                        tasks.remove(j);
+                    }
+                }
+            }
+            // Send the names of components that are in the task
+            Network.sendInt(Commands.TASKS, output);
+            Network.sendInt(tasks.size(), output);
+            for (String name_component : tasks) {
                 Network.sendString(name_component, output);
             }
         }

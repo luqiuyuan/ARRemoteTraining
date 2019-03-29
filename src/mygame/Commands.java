@@ -23,5 +23,6 @@ public class Commands {
     protected static final int SET_TARGET_CONFIGURATION = 9;
     protected static final int HEARTBEAT = 10;
     protected static final int DONES = 11;
+    protected static final int TASKS = 12;
     
 }
