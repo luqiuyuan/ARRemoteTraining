@@ -327,6 +327,15 @@ public class Client extends AbstractAppState {
                     } else {
                         dones.add(entry.getKey());
                     }
+                } else {
+                    // Do NOT render a model to the trainee if it is NOT away from its starting position
+                    if (this.role.equals(Constants.NAME_TRAINEE)) {
+                        if (!opposite.hasMoved(entry.getKey())) {
+                            if (!Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue())) {
+                                opposite.markAsHasMoved(entry.getKey());
+                            }
+                        }
+                    }
                 }
             }
             
