@@ -14,6 +14,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.util.TangentBinormalGenerator;
 import com.jme3.asset.AssetNotFoundException;
+import com.jme3.material.RenderState;
+import com.jme3.renderer.queue.RenderQueue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -89,7 +91,7 @@ public class Main extends SimpleApplication {
         for (String name : model_names) {
             Spatial model;
             try {
-                model = (Spatial) assetManager.loadModel("Models/" + name + ".obj");
+                model = assetManager.loadModel("Models/" + name + ".obj");
             } catch (AssetNotFoundException e) {
                 Box box = new Box(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f));
                 Geometry geo = new Geometry(name, box);

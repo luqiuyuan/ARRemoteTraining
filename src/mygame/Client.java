@@ -54,6 +54,7 @@ public class Client extends AbstractAppState {
     private Map<String, Matrix4f> transformations;
     private Map<String, Matrix4f> transformations_relative;
     private Map<String, Matrix4f> transformations_relative_start;
+    private Map<String, Boolean> has_moved; // has a component moved from its starting status?
     
     // Reference object
     String referenceName = "hexagon";
@@ -75,6 +76,9 @@ public class Client extends AbstractAppState {
     
     ComponentConfiguration component_configuration;
     
+    // Arrows
+    Map<String, Arrow> arrows;
+    
     // Heartbeat
     private static final int HEARTBEAT_INTERVAL_IN_MILLISECONDS = 500;
     private long heartbeat_timestamp_last;
@@ -89,6 +93,7 @@ public class Client extends AbstractAppState {
         transformations = new HashMap<>();
         transformations_relative = new HashMap<>();
         transformations_relative_start = new HashMap<>();
+        has_moved = new HashMap();
         
         // Initialize models
         this.models = this.app.cloneModels();
@@ -101,6 +106,9 @@ public class Client extends AbstractAppState {
         
         // Initialize the last timestamp of heartbeat to the time of creating the client instance
         heartbeat_timestamp_last = new Date().getTime();
+        
+        // Initialize the arrows
+        this.arrows = new HashMap<>();
     }
     
     public void initializeCamera() {
@@ -110,6 +118,9 @@ public class Client extends AbstractAppState {
     
     @Override
     public void update(float tpf) {
+        // Initialization for update
+        initializationForUpdate();
+        
         // other operations
         otherOperations();
         
@@ -148,6 +159,9 @@ public class Client extends AbstractAppState {
                     // After reading all inputs, check if target configuration has been set
                     if (this.component_configuration == null) break;
                     Target target = Target.getTargets().get(name_target);
+                    if (Config.DEUBG_MODE && target == null) {
+                        System.err.println("Target with name " + name_target + "is not in the configuration.");
+                    }
                     String name_component = target.getNameComponent();
                     Spatial model = this.models.get(name_component);
                     if (model != null) {
@@ -223,16 +237,12 @@ public class Client extends AbstractAppState {
                         System.out.println("Client #" + this.id + ": set resolution as " + this.width + " (width)" + " : " + this.height + " (height)");
                     }
                     aspect_ratio = (float) width / (float) height;
-                    cam.setFrustumPerspective(80.0f, 1, aspect_ratio, 10000);
+                    cam.setFrustumPerspective(80.0f, aspect_ratio, 0.01f, 10000);
                     break;
                 case Commands.SET_CAMERA_PROJECTION_MATRIX:
                     float[] nums = Network.readFloatArray(16, input);
                     Matrix4f mat = new Matrix4f(nums);
-                    mat.set(0, 0, -mat.get(0, 1));
-                    mat.set(1, 1, -mat.get(1, 0));
-                    mat.set(1, 0, 0);
-                    mat.set(0, 1, 0);
-                    mat.set(2, 1, 0);
+                    mat.set(1, 1, -mat.get(1, 1));
                     mat.set(2, 2, -mat.get(2, 2));
                     mat.set(2, 3, mat.get(3, 2));
                     mat.set(3, 2, -1);
@@ -269,12 +279,16 @@ public class Client extends AbstractAppState {
         }
     }
     
+    private void initializationForUpdate() {
+        // Detach all arrows at the beginning of every frame
+        for (Map.Entry<String, Arrow> entry : this.arrows.entrySet()) {
+            entry.getValue().detachFrom(this.app.getRootNode());
+        }
+    }
+    
     void setJPGVideoSender(JPGVideoSender sender) {
         this.sender = sender;
     }
-    
-    String getRole() { return this.role; }
-    void setRole(String role) { this.role = role; }
     
     void updateRenderMap() {
         ArrayList<Client> opposites;
@@ -289,16 +303,36 @@ public class Client extends AbstractAppState {
             ArrayList<String> render_map = new ArrayList<>();
             render_maps.add(render_map);
             Client opposite = opposites.get(i);
+            ArrayList<String> dones = new ArrayList<>();
             for (Map.Entry<String, Matrix4f> entry : opposite.transformations_relative.entrySet()) {
                 if (!entry.getKey().equals(Constants.NAME_PRIME_OBJECT) && this.transformations_relative.get(entry.getKey()) != null) {
-                    // Do NOT render a model if it is NOT away from its starting position
-                    if (Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue()))
-                        continue;
+                    // Do NOT render a model to the trainee if it is NOT away from its starting position
+                    if (this.role.equals(Constants.NAME_TRAINEE)) {
+                        if (!opposite.hasMoved(entry.getKey())) {
+                            if (!Helper.areTwoTransformationSimilar(opposite.transformations_relative_start.get(entry.getKey()), entry.getValue())) {
+                                opposite.markAsHasMoved(entry.getKey());
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
                     
                     if (!Helper.areTwoTransformationSimilar(this.transformations_relative.get(entry.getKey()), entry.getValue())) {
                         render_map.add(entry.getKey());
+                        // Show an arrow pointing from current location to destinational location.
+                        updateArrow(entry.getKey(), entry.getValue());
+                    } else {
+                        dones.add(entry.getKey());
                     }
                 }
+            }
+            
+            // Send the names of components that are aligned to the client
+            Network.sendInt(Commands.DONES, output);
+            Network.sendInt(dones.size()+1, output);
+            Network.sendString(Constants.NAME_PRIME_OBJECT, output);
+            for (String name_component : dones) {
+                Network.sendString(name_component, output);
             }
         }
     }
@@ -349,4 +383,47 @@ public class Client extends AbstractAppState {
             heartbeat_timestamp_last = heartbeat_timestamp;
         }
     }
+    
+    private void updateArrow(String name_component, Matrix4f transformation_end) {
+        // Only show it for trainees and when current location is known,
+        // the object is being tracked,
+        // and the prime object is being tracked.
+        if (this.role.equals(Constants.NAME_TRAINEE)
+            && this.founds_model.get(name_component) != null
+            && this.founds_model.get(name_component) == true
+            && this.founds_model.get(Constants.NAME_PRIME_OBJECT) != null
+            && this.founds_model.get(Constants.NAME_PRIME_OBJECT) == true) {
+            Arrow arrow;
+            if (this.arrows.get(name_component) == null) { // If the arrow has not been created, create it.
+                arrow = new Arrow(Vector3f.ZERO, Vector3f.ZERO, new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.7f), this.app.getAssetManager());
+                arrow.hide(); // The arrow is created in hidden state
+                this.arrows.put(name_component, arrow);
+            }
+            arrow = this.arrows.get(name_component);
+            Matrix4f transformation_start = this.transformations_relative.get(name_component);
+            Vector3f location_start = new Vector3f(transformation_start.m03, transformation_start.m13, transformation_start.m23);
+            Vector3f location_end = new Vector3f(transformation_end.m03, transformation_end.m13, transformation_end.m23);
+            arrow.update(location_start, location_end);
+            arrow.attachTo(this.app.getRootNode());
+        }
+    }
+    
+    private boolean hasMoved(String name_component) {
+        if (has_moved.get(name_component) == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    private void markAsHasMoved(String name_component) {
+        has_moved.put(name_component, true);
+    }
+    
+    //================================
+    // Setters and Getters
+    //================================
+    
+    String getRole() { return this.role; }
+    void setRole(String role) { this.role = role; }
+    
 }

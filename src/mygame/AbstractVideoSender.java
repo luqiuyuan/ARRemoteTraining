@@ -123,6 +123,11 @@ public abstract class AbstractVideoSender
             }
         }
         
+        // Make all arrows for this client as showable state
+        for (Map.Entry<String, Arrow> entry : this.client.arrows.entrySet()) {
+            entry.getValue().show();
+        }
+        
         if (Config.SHOW_OWN_MODELS) {
             Map<String, Boolean> founds_model = new HashMap<>();
             for (Map.Entry<String, Boolean> entry : this.client.founds.entrySet()) {
@@ -165,6 +170,11 @@ public abstract class AbstractVideoSender
                     }
                 }
             }
+        }
+        
+        // Make all arrows for this client as hidden state
+        for (Map.Entry<String, Arrow> entry : this.client.arrows.entrySet()) {
+            entry.getValue().hide();
         }
         
         if (Config.SHOW_OWN_MODELS) {
