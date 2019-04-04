@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" style="enable-background:new 0 0 150 150;" version="1.1" viewBox="0 0 150 150" x="0px" y="0px" xml:space="preserve">
+<g id="VuMark-Background">
+</g>
+<g id="VuMark-ClearSpace">
+	<rect height="150" style="fill:#FFFFFF;" width="150" />
+</g>
+<g id="VuMark-Border">
+	<rect height="140" width="140" x="5" y="5.442" />
+</g>
+<g id="VuMark-DarkElements">
+	<rect height="20" id="d0000" width="20" x="15" y="74.442" />
+	<rect height="20" id="d0002" width="20" x="15" y="94.442" />
+	<rect height="20" id="d0004" width="20" x="55" y="94.442" />
+	<rect height="20" id="d0005" width="20" x="55" y="74.442" />
+	<rect height="20" id="d0006" width="20" x="75" y="74.442" />
+	<rect height="20" id="d0008" width="20" x="95" y="74.442" />
+	<rect height="20" id="d0010" width="20" x="115" y="94.442" />
+	<rect height="20" id="d0014" width="20" x="35" y="34.442" />
+	<rect height="20" id="d0015" width="20" x="35" y="74.442" />
+	<rect height="20" id="d0016" width="20" x="15" y="14.442" />
+<rect height="20" id="d0021" width="20" x="75" y="54.442" />
+	<rect height="20" id="d0026" width="20" x="75" y="34.442" />
+	<rect height="20" id="d0028" width="20" x="115" y="54.442" />
+	<rect height="20" id="d0029" width="20" x="115" y="34.442" />
+	</g>
+<g id="VuMark-BrightElements">
+	<rect height="20" id="b0001" style="fill:#FFFFFF;" width="20" x="15" y="114.442" />
+	<rect height="20" id="b0003" style="fill:#FFFFFF;" width="20" x="35" y="94.442" />
+	<rect height="20" id="b0007" style="fill:#FFFFFF;" width="20" x="75" y="94.442" />
+	<rect height="20" id="b0009" style="fill:#FFFFFF;" width="20" x="95" y="94.442" />
+	<rect height="20" id="b0011" style="fill:#FFFFFF;" width="20" x="115" y="74.442" />
+	<rect height="20" id="b0012" style="fill:#FFFFFF;" width="20" x="15" y="54.442" />
+	<rect height="20" id="b0013" style="fill:#FFFFFF;" width="20" x="35" y="54.442" />
+	<rect height="20" id="b0017" style="fill:#FFFFFF;" width="20" x="15" y="34.442" />
+	<rect height="20" id="b0018" style="fill:#FFFFFF;" width="20" x="35" y="14.442" />
+	<rect height="20" id="b0019" style="fill:#FFFFFF;" width="20" x="55" y="14.442" />
+	<rect height="20" id="b0020" style="fill:#FFFFFF;" width="20" x="55" y="54.442" />
+	<rect height="20" id="b0022" style="fill:#FFFFFF;" width="20" x="95" y="34.442" />
+	<rect height="20" id="b0023" style="fill:#FFFFFF;" width="20" x="95" y="54.442" />
+	<rect height="20" id="b0024" style="fill:#FFFFFF;" width="20" x="55" y="34.442" />
+	<rect height="20" id="b0025" style="fill:#FFFFFF;" width="20" x="75" y="14.442" />
+	<rect height="20" id="b0027" style="fill:#FFFFFF;" width="20" x="95" y="14.442" />
+	<rect height="20" id="b0030" style="fill:#FFFFFF;" width="20" x="115" y="14.442" />
+	</g>
+</svg>
